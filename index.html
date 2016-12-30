@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <title>reconcile test page</title>
+        <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            .match-same { background-color: #0f0; }
+
+            .match-samews { background-color: #ff0; }
+
+            .match-contains { background-color: #ffc; }
+        </style>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js" type="text/javascript"></script>
+        <script src="reconcileTestService.js" type="text/javascript"></script>
+        <script src="reconcileBootstrapView.js" type="text/javascript"></script>
+        <script src="reconcile.js" type="text/javascript"></script>
+        <script>
+            $(document).ready(function() {
+                reconcileBootstrapView.setMasterDiv($('.reconcile'));
+                reconcileBootstrapView.setShowList(true);
+                reconcile.setView(reconcileBootstrapView);
+                reconcile.setService(reconcileTestService);
+                reconcile.load();
+            });
+        </script>
+    </head>
+    <body>
+        <div style="border: 1pt solid black; margin: 30px;">
+            <div class="reconcile container"></div>
+        </div>
+    </body>
+</html>
