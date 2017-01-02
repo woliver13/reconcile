@@ -16,8 +16,16 @@
     var idProperty = 'id';
 
     var setService = function(service1) { service = service1; };
-    var setView = function(view1) { view = view1; };
-    var setIdProperty = function (prop) {
+    var setView = function(view1) {
+        view = view1;
+        if (view1.addEvent) {
+            view1.addEvent('next', next);
+            view1.addEvent('prev', prev);
+            view1.addEvent('undo', undo);
+            view1.addEvent('match', match);
+        }
+    };
+    var setIdProperty = function(prop) {
         idProperty = prop;
         view.setIdProperty(prop);
     };
@@ -36,10 +44,10 @@
 
     var redraw = function() {
         var matchItem = listA[position];
-        view.load(matchItem, getCandidates(matchItem, listB), listA, listB);
+        view.load(matchItem, getCandidates(matchItem, listB), listA, listB, memento);
     };
 
-    var load = function() {
+    var init = function() {
         $.when(service.load()).then(function(data) {
             listA = data.a;
             listB = data.b;
@@ -55,7 +63,7 @@
         return 0;
     };
 
-    var getCandidates = function (matchItem, list) {
+    var getCandidates = function(matchItem, list) {
         if (matchItem == null) return [];
         var result = list.map(function(item) {
             var result2 = new Object();
@@ -83,11 +91,13 @@
         if (doesContain(cell1, cell2)) return 30;
         return 0;
     };
+
     var isSameWs = function(cell1, cell2) {
         if (cell1 == null) return false;
         if (cell2 == null) return false;
         return cell1.toString().toUpperCase().replace(/\s/g, '') == cell2.toString().toUpperCase().replace(/\s/g, '');
     };
+
     var doesContain = function(cell1, cell2) {
         if (cell1 == null) return false;
         if (cell2 == null) return false;
@@ -95,15 +105,16 @@
         if (cell2.toString().toUpperCase().indexOf(cell1.toString().toUpperCase()) > -1) return true;
         return false;
     };
-    var match = function(listAId, listBId) {
-        service.set(listAId, listBId);
+
+    var match = function(event) {
+        service.set(event.a, event.b);
         var lastMatch = {
-            a: listA.find(function(item) { return item[idProperty] == listAId; }),
-            b: listB.find(function(item) { return item[idProperty] == listBId; })
+            a: listA.find(function(item) { return item[idProperty] == event.a; }),
+            b: listB.find(function(item) { return item[idProperty] == event.b; })
         };
         memento.push(lastMatch);
-        listA = listA.filter(function(item) { return item[idProperty] != listAId; });
-        listB = listB.filter(function(item) { return item[idProperty] != listBId; });
+        listA = listA.filter(function(item) { return item[idProperty] != event.a; });
+        listB = listB.filter(function(item) { return item[idProperty] != event.b; });
         redraw();
     };
 
@@ -115,13 +126,12 @@
         redraw();
     };
 
-    
     return {
         next: next,
         prev: prev,
         match: match,
         undo: undo,
-        load: load,
+        init: init,
         setService: setService,
         setView: setView,
         setIdProperty: setIdProperty

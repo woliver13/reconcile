@@ -18,7 +18,7 @@
         { id: 'A', name: { last: 'Zarkosi', first: 'Nicholas' }, drivers: '123456789', dateOfBirth: '19660606' },
         { id: 'B', name: { last: 'Earnhardt Sr', first: 'Dale' }, drivers: '123456780', dateOfBirth: '19350112' },
         { id: 'C', name: { last: 'Earnhardt Jr', first: 'Dale' }, drivers: '123456781', dateOfBirth: '19660606' },
-        { id: 'D', name: { last: 'Oliver', first: 'Clark' }, drivers: '123456782', dateOfBirth: '19801223' }
+        { id: 'D', name: { last: 'Oliver', first: 'Clark' }, drivers: '123456782', dateOfBirth: '19660606' }
     ];
 
     var makeAStandard = function(item) {
