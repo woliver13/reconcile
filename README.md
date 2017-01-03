@@ -13,4 +13,4 @@ You will need to build a service. The service pulls the unmatched lists from you
 
 3. load() - promise to return an object containing two lists of matching flyweights. The flyweights must be display ready. They must have the exact same properties. All properties must exist, even if they are null.
 
-Start by looking at the code in reconcileTestService.js. View index.html to see it work.
+Start by looking at the code in [reconcileTestService.js]. View [index.html] to see it work.
