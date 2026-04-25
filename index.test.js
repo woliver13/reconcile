@@ -14,7 +14,7 @@ describe('index.html', () => {
     });
 
     it('loads jQuery 3.x or later', () => {
-        const match = html.match(/jquery[.\-](\d+)\.\d+/i);
+        const match = html.match(/jquery[.-](\d+)\.\d+/i);
         expect(match).not.toBeNull();
         expect(parseInt(match[1])).toBeGreaterThanOrEqual(3);
     });

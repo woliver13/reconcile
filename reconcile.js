@@ -71,7 +71,7 @@
             let matchTotal = 0;
             Object.keys(item).forEach(function(key) {
                 result2[key] = item[key];
-                if (key != idProperty) {
+                if (key !== idProperty) {
                     weights[key] = getWeight(item[key], matchItem[key]);
                     matchTotal += weights[key];
                 }
@@ -88,7 +88,7 @@
     const getWeight = function(cell1, cell2) {
         if (cell1 == null) return 0;
         if (cell2 == null) return 0;
-        if (cell1 == cell2) return WEIGHTS.EXACT;
+        if (cell1 === cell2) return WEIGHTS.EXACT;
         if (isSameWs(cell1, cell2)) return WEIGHTS.WHITESPACE;
         if (doesContain(cell1, cell2)) return WEIGHTS.CONTAINS;
         return 0;
@@ -97,7 +97,7 @@
     const isSameWs = function(cell1, cell2) {
         if (cell1 == null) return false;
         if (cell2 == null) return false;
-        return cell1.toString().toUpperCase().replace(/\s/g, '') == cell2.toString().toUpperCase().replace(/\s/g, '');
+        return cell1.toString().toUpperCase().replace(/\s/g, '') === cell2.toString().toUpperCase().replace(/\s/g, '');
     };
 
     const doesContain = function(cell1, cell2) {
@@ -111,17 +111,17 @@
     const match = function(event) {
         service.set(event.a, event.b);
         const lastMatch = {
-            a: listA.find(function(item) { return item[idProperty] == event.a; }),
-            b: listB.find(function(item) { return item[idProperty] == event.b; })
+            a: listA.find(function(item) { return item[idProperty] === event.a; }),
+            b: listB.find(function(item) { return item[idProperty] === event.b; })
         };
         memento.push(lastMatch);
-        listA = listA.filter(function(item) { return item[idProperty] != event.a; });
-        listB = listB.filter(function(item) { return item[idProperty] != event.b; });
+        listA = listA.filter(function(item) { return item[idProperty] !== event.a; });
+        listB = listB.filter(function(item) { return item[idProperty] !== event.b; });
         redraw();
     };
 
     const undo = function() {
-        if (memento.length == 0) return;
+        if (memento.length === 0) return;
         const lastMatch = memento.pop();
         service.undo(lastMatch.a[idProperty], lastMatch.b[idProperty]);
         listA.push(lastMatch.a);
