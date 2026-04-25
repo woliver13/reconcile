@@ -1,0 +1,17 @@
+{
+  "name": "reconcile",
+  "version": "1.0.0",
+  "description": "JavaScript UMD controller for manual reconciliation",
+  "main": "reconcile.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^jquery$": "<rootDir>/__mocks__/jquery.js"
+    }
+  }
+}

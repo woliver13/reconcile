@@ -27,7 +27,7 @@
         result.firstName = item.FirstName;
         result.lastName = item.LastName;
         result.gid = item.DL;
-        result.dateOfBirth = item.DOB.getFullYear().toString() + ('0' + item.DOB.getMonth()).slice(-2) + ('0' + item.DOB.getDate()).slice(-2);
+        result.dateOfBirth = item.DOB.getFullYear().toString() + ('0' + (item.DOB.getMonth() + 1)).slice(-2) + ('0' + item.DOB.getDate()).slice(-2);
         result.ssn = item.SSN;
         return result;
     };
