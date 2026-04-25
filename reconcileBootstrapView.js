@@ -20,12 +20,12 @@
 
     var buildMatchLine = function(matchItem, canUndo) {
         var matchDiv = $('<div class="row">');
-        for (var key in matchItem) {
+        Object.keys(matchItem).forEach(function(key) {
             if (key != idProperty) {
                 var cellDiv = $('<div class="col-md-1">' + matchItem[key] + '</div>');
                 matchDiv.append(cellDiv);
             }
-        }
+        });
         matchDiv.append($('<div class="col-md-1"><button class="btn" accesskey="n">Next</button></div>'));
         matchDiv.append($('<div class="col-md-1"><button class="btn" accesskey="p">Prev</button></div>'));
         matchDiv.append($('<div class="col-md-1"><button class="btn" accesskey="u">Undo</button></div>'));
@@ -40,19 +40,19 @@
 
     var buildHeaderDiv = function(matchItem) {
         var headerDiv = $('<div class="row" style="background-color:#000;color:#fff">');
-        for (var key in matchItem) {
+        Object.keys(matchItem).forEach(function(key) {
             if (key != idProperty) {
                 var cellDiv = $('<div class="col-md-1">' + key + '</div>');
                 headerDiv.append(cellDiv);
             }
-        }
+        });
         return headerDiv;
     };
 
     var buildCandidates = function(matchItem, candidates) {
         var result = candidates.map(function(item) {
             var candidateDiv = $('<div class="row">');
-            for (var key in item) {
+            Object.keys(item).forEach(function(key) {
                 if (key != idProperty && key != 'weights') {
                     var cellDiv = $('<div class="col-md-1">' + item[key] + '</div>');
                     if (item.weights[key] == weights.EXACT) cellDiv.addClass('match-same');
@@ -60,7 +60,7 @@
                     if (item.weights[key] == weights.CONTAINS) cellDiv.addClass('match-contains');
                     candidateDiv.append(cellDiv);
                 }
-            }
+            });
             var matchButton = $('<button class="btn" accesskey="m" data-a="' + matchItem[idProperty] + '" data-b="' + item[idProperty] + '">Match</button>');
             $(matchButton).on('click', match);
             var newDiv = $('<div class="col-md-1">');
@@ -76,10 +76,10 @@
         var result = $('<div id="' + listId + '"><h3>' + listName + '</h3></div>');
         $.each(list, function(index, item) {
             var rowDiv = $('<div class="row">');
-            for (var key in item) {
+            Object.keys(item).forEach(function(key) {
                 if (key != idProperty)
                     rowDiv.append($('<div class="col-md-1">' + item[key] + '</div>'));
-            }
+            });
             result.append(rowDiv);
         });
         return result;

@@ -109,6 +109,18 @@ describe('reconcile', () => {
             );
             expect(candidates()).toEqual([]);
         });
+
+        it('does not score inherited enumerable properties', () => {
+            const proto = { name: 'Alice' };
+            const inherited = Object.create(proto);
+            inherited.id = 'X';
+            // inherited has no own 'name' — only via prototype
+            setup(
+                [{ id: '1', name: 'Alice' }],
+                [inherited]
+            );
+            expect(candidates()).toEqual([]);
+        });
     });
 
     describe('match() / undo() round-trip', () => {
