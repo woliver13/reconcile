@@ -33,6 +33,16 @@ describe('reconcile', () => {
         reconcile.init();
     });
 
+    describe('WEIGHTS', () => {
+        it('exports named weight constants used by the scoring algorithm', () => {
+            expect(reconcile.WEIGHTS).toEqual({
+                EXACT: 100,
+                WHITESPACE: 80,
+                CONTAINS: 30
+            });
+        });
+    });
+
     describe('undo()', () => {
         it('calls service.undo() with the IDs of the last matched pair', () => {
             reconcile.match({ a: '5', b: 'A' });
