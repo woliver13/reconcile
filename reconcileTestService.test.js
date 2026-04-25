@@ -1,6 +1,22 @@
 const service = require('./reconcileTestService');
 
 describe('reconcileTestService', () => {
+    describe('set()', () => {
+        it('does not call alert()', () => {
+            global.alert = jest.fn();
+            service.set('1', 'A');
+            expect(global.alert).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('undo()', () => {
+        it('does not call alert()', () => {
+            global.alert = jest.fn();
+            service.undo('1', 'A');
+            expect(global.alert).not.toHaveBeenCalled();
+        });
+    });
+
     describe('dateOfBirth formatting in standardised list A', () => {
         let listA;
 

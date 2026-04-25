@@ -44,12 +44,12 @@
     };
 
     var set = function (listAId, listBId) {
-        alert('matching ' + listAId + ' => ' + listBId);
+        console.log('matching ' + listAId + ' => ' + listBId);
         /* let systems know of match */
         // $.postJSON('/api/matches',{sysa:listAId,sysb:listBId});
     };
     var undo = function (listAId, listBId) {
-        alert('undoing ' + listAId + ' => ' + listBId);
+        console.log('undoing ' + listAId + ' => ' + listBId);
         /* let systems know that this match is bogus */
         /*
         $.ajax({
