@@ -19,6 +19,7 @@
                 reconcile.setService(reconcileTestService);
                 reconcileBootstrapView.setMasterDiv($('.reconcile'));
                 reconcileBootstrapView.setShowList(true);
+                reconcileBootstrapView.setWeights(reconcile.WEIGHTS);
                 reconcile.setView(reconcileBootstrapView);
                 reconcile.init();
             });

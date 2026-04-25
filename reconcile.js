@@ -83,12 +83,14 @@
         return result.filter(function(item) { return item.weights['matchTotal'] > 0; }).sort(sortByMatchTotal);
     };
 
+    var WEIGHTS = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
+
     var getWeight = function(cell1, cell2) {
         if (cell1 == null) return 0;
         if (cell2 == null) return 0;
-        if (cell1 == cell2) return 100;
-        if (isSameWs(cell1, cell2)) return 80;
-        if (doesContain(cell1, cell2)) return 30;
+        if (cell1 == cell2) return WEIGHTS.EXACT;
+        if (isSameWs(cell1, cell2)) return WEIGHTS.WHITESPACE;
+        if (doesContain(cell1, cell2)) return WEIGHTS.CONTAINS;
         return 0;
     };
 
@@ -135,6 +137,7 @@
         init: init,
         setService: setService,
         setView: setView,
-        setIdProperty: setIdProperty
+        setIdProperty: setIdProperty,
+        WEIGHTS: WEIGHTS
     };
 }));

@@ -10,6 +10,9 @@
     var masterDiv = null;
     var showList = false;
     var idProperty = 'id';
+    var weights = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
+
+    var setWeights = function(w) { weights = w; };
 
     var setMasterDiv = function(div) { masterDiv = div; };
     var setShowList = function(showList1) { showList = showList1; };
@@ -52,9 +55,9 @@
             for (var key in item) {
                 if (key != idProperty && key != 'weights') {
                     var cellDiv = $('<div class="col-md-1">' + item[key] + '</div>');
-                    if (item.weights[key] == 100) cellDiv.addClass('match-same');
-                    if (item.weights[key] == 80) cellDiv.addClass('match-samews');
-                    if (item.weights[key] == 30) cellDiv.addClass('match-contains');
+                    if (item.weights[key] == weights.EXACT) cellDiv.addClass('match-same');
+                    if (item.weights[key] == weights.WHITESPACE) cellDiv.addClass('match-samews');
+                    if (item.weights[key] == weights.CONTAINS) cellDiv.addClass('match-contains');
                     candidateDiv.append(cellDiv);
                 }
             }
@@ -131,6 +134,7 @@
         setMasterDiv: setMasterDiv,
         setShowList: setShowList,
         setIdProperty: setIdProperty,
+        setWeights: setWeights,
         addEvent: addEvent,
         next: next,
         prev: prev,
