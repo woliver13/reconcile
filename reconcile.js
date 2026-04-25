@@ -126,6 +126,7 @@
         service.undo(lastMatch.a[idProperty], lastMatch.b[idProperty]);
         listA.push(lastMatch.a);
         listB.push(lastMatch.b);
+        position = listA.length - 1;
         redraw();
     };
 
