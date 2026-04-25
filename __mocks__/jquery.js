@@ -1,4 +1,4 @@
-// Minimal synchronous jQuery stub for Jest — only covers Deferred/promise used by reconcileTestService.
+// Minimal synchronous jQuery stub for Jest — covers Deferred/promise and $.when.
 const $ = function() {};
 
 $.Deferred = function() {
@@ -10,6 +10,16 @@ $.Deferred = function() {
     return {
         resolve: function(val) { _value = val; },
         promise: function() { return promise; }
+    };
+};
+
+$.when = function(promise) {
+    let _resolved;
+    promise.done(function(val) { _resolved = val; });
+    return {
+        then: function(success, _error) {
+            if (success) success(_resolved);
+        }
     };
 };
 
