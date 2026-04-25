@@ -69,13 +69,13 @@
             var result2 = new Object();
             var weights = new Object();
             var matchTotal = 0;
-            for (var key in item) {
+            Object.keys(item).forEach(function(key) {
                 result2[key] = item[key];
                 if (key != idProperty) {
                     weights[key] = getWeight(item[key], matchItem[key]);
                     matchTotal += weights[key];
                 }
-            };
+            });
             weights['matchTotal'] = matchTotal;
             result2.weights = weights;
             return result2;
