@@ -7,22 +7,22 @@
         root.reconcileBootstrapView = factory(root.$);
     }
 }(this, function($) {
-    var masterDiv = null;
-    var showList = false;
-    var idProperty = 'id';
-    var weights = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
+    let masterDiv = null;
+    let showList = false;
+    let idProperty = 'id';
+    let weights = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
 
-    var setWeights = function(w) { weights = w; };
+    const setWeights = function(w) { weights = w; };
 
-    var setMasterDiv = function(div) { masterDiv = div; };
-    var setShowList = function(showList1) { showList = showList1; };
-    var setIdProperty = function(prop) { idProperty = prop; };
+    const setMasterDiv = function(div) { masterDiv = div; };
+    const setShowList = function(showList1) { showList = showList1; };
+    const setIdProperty = function(prop) { idProperty = prop; };
 
-    var buildMatchLine = function(matchItem, canUndo) {
-        var matchDiv = $('<div class="row">');
+    const buildMatchLine = function(matchItem, canUndo) {
+        const matchDiv = $('<div class="row">');
         Object.keys(matchItem).forEach(function(key) {
             if (key != idProperty) {
-                var cellDiv = $('<div class="col-md-1">' + matchItem[key] + '</div>');
+                const cellDiv = $('<div class="col-md-1">' + matchItem[key] + '</div>');
                 matchDiv.append(cellDiv);
             }
         });
@@ -38,32 +38,32 @@
         return matchDiv;
     };
 
-    var buildHeaderDiv = function(matchItem) {
-        var headerDiv = $('<div class="row" style="background-color:#000;color:#fff">');
+    const buildHeaderDiv = function(matchItem) {
+        const headerDiv = $('<div class="row" style="background-color:#000;color:#fff">');
         Object.keys(matchItem).forEach(function(key) {
             if (key != idProperty) {
-                var cellDiv = $('<div class="col-md-1">' + key + '</div>');
+                const cellDiv = $('<div class="col-md-1">' + key + '</div>');
                 headerDiv.append(cellDiv);
             }
         });
         return headerDiv;
     };
 
-    var buildCandidates = function(matchItem, candidates) {
-        var result = candidates.map(function(item, index) {
-            var candidateDiv = $('<div class="row">');
+    const buildCandidates = function(matchItem, candidates) {
+        const result = candidates.map(function(item, index) {
+            const candidateDiv = $('<div class="row">');
             Object.keys(item).forEach(function(key) {
                 if (key != idProperty && key != 'weights') {
-                    var cellDiv = $('<div class="col-md-1">' + item[key] + '</div>');
+                    const cellDiv = $('<div class="col-md-1">' + item[key] + '</div>');
                     if (item.weights[key] == weights.EXACT) cellDiv.addClass('match-same');
                     if (item.weights[key] == weights.WHITESPACE) cellDiv.addClass('match-samews');
                     if (item.weights[key] == weights.CONTAINS) cellDiv.addClass('match-contains');
                     candidateDiv.append(cellDiv);
                 }
             });
-            var matchButton = $('<button class="btn"' + (index === 0 ? ' accesskey="m"' : '') + ' data-a="' + matchItem[idProperty] + '" data-b="' + item[idProperty] + '">Match</button>');
+            const matchButton = $('<button class="btn"' + (index === 0 ? ' accesskey="m"' : '') + ' data-a="' + matchItem[idProperty] + '" data-b="' + item[idProperty] + '">Match</button>');
             $(matchButton).on('click', match);
-            var newDiv = $('<div class="col-md-1">');
+            const newDiv = $('<div class="col-md-1">');
             newDiv.append(matchButton);
             candidateDiv.append(newDiv);
             return candidateDiv;
@@ -71,11 +71,11 @@
         return result;
     };
 
-    var buildList = function(list, listName) {
-        var listId = listName.replace(' ', '_');
-        var result = $('<div id="' + listId + '"><h3>' + listName + '</h3></div>');
+    const buildList = function(list, listName) {
+        const listId = listName.replace(' ', '_');
+        const result = $('<div id="' + listId + '"><h3>' + listName + '</h3></div>');
         $.each(list, function(index, item) {
-            var rowDiv = $('<div class="row">');
+            const rowDiv = $('<div class="row">');
             Object.keys(item).forEach(function(key) {
                 if (key != idProperty)
                     rowDiv.append($('<div class="col-md-1">' + item[key] + '</div>'));
@@ -85,7 +85,7 @@
         return result;
     };
 
-    var load = function(matchItem, candidates, listA, listB, memento) {
+    const load = function(matchItem, candidates, listA, listB, memento) {
         masterDiv.empty();
         if (listA.length > 0) {
             masterDiv.append(buildMatchLine(matchItem, memento.length > 0));
@@ -102,9 +102,9 @@
         }
     };
 
-    var listeners = {};
+    const listeners = {};
 
-    var addEvent = function(type, listener) {
+    const addEvent = function(type, listener) {
         if (!listeners[type]) {
             listeners[type] = [];
         }
@@ -113,21 +113,21 @@
         }
     };
 
-    var dispatchEvent = function(e) {
-        var fireList = listeners[e.type];
+    const dispatchEvent = function(e) {
+        const fireList = listeners[e.type];
         if (fireList) {
             if (!e.target) {
                 e.target = this;
             }
-            for (var fireFunction in fireList) {
+            for (const fireFunction in fireList) {
                 fireList[fireFunction](e);
             }
         }
     };
-    var next = function() { dispatchEvent({ type: 'next' }); };
-    var prev = function() { dispatchEvent({ type: 'prev' }); };
-    var undo = function() { dispatchEvent({ type: 'undo' }); };
-    var match = function(e) { dispatchEvent({ type: 'match', a: $(e.target).attr('data-a'), b: $(e.target).attr('data-b') }); };
+    const next = function() { dispatchEvent({ type: 'next' }); };
+    const prev = function() { dispatchEvent({ type: 'prev' }); };
+    const undo = function() { dispatchEvent({ type: 'undo' }); };
+    const match = function(e) { dispatchEvent({ type: 'match', a: $(e.target).attr('data-a'), b: $(e.target).attr('data-b') }); };
 
     return {
         load: load,
