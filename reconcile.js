@@ -121,6 +121,7 @@
     var undo = function() {
         if (memento.length == 0) return;
         var lastMatch = memento.pop();
+        service.undo(lastMatch.a[idProperty], lastMatch.b[idProperty]);
         listA.push(lastMatch.a);
         listB.push(lastMatch.b);
         redraw();
