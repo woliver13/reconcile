@@ -50,7 +50,7 @@
     };
 
     var buildCandidates = function(matchItem, candidates) {
-        var result = candidates.map(function(item) {
+        var result = candidates.map(function(item, index) {
             var candidateDiv = $('<div class="row">');
             Object.keys(item).forEach(function(key) {
                 if (key != idProperty && key != 'weights') {
@@ -61,7 +61,7 @@
                     candidateDiv.append(cellDiv);
                 }
             });
-            var matchButton = $('<button class="btn" accesskey="m" data-a="' + matchItem[idProperty] + '" data-b="' + item[idProperty] + '">Match</button>');
+            var matchButton = $('<button class="btn"' + (index === 0 ? ' accesskey="m"' : '') + ' data-a="' + matchItem[idProperty] + '" data-b="' + item[idProperty] + '">Match</button>');
             $(matchButton).on('click', match);
             var newDiv = $('<div class="col-md-1">');
             newDiv.append(matchButton);
