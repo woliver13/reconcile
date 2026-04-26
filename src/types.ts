@@ -6,6 +6,8 @@ export interface Weights {
     TRANSPOSITION: number;
 }
 
+export type ColumnWeights = Record<string, Partial<Weights>>;
+
 export type ActionType = 'next' | 'prev' | 'undo' | 'match';
 
 export interface ActionEvent {

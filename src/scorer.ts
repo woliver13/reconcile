@@ -1,20 +1,24 @@
-import { Item, Candidate, Weights } from './types';
+import { Item, Candidate, Weights, ColumnWeights } from './types';
 import NICKNAME_GROUPS from './nicknames.json';
 
 const NICKNAME_MAP = new Map<string, number>();
 (NICKNAME_GROUPS as string[][]).forEach((group, idx) => group.forEach(name => NICKNAME_MAP.set(name, idx)));
 
 export class Scorer {
-    constructor(private readonly weights: Weights) {}
+    constructor(
+        private readonly weights: Weights,
+        private readonly columnWeights: ColumnWeights = {},
+    ) {}
 
-    getWeight(cell1: unknown, cell2: unknown): number {
+    getWeight(cell1: unknown, cell2: unknown, column?: string): number {
         if (cell1 == null) return 0;
         if (cell2 == null) return 0;
-        if (cell1 === cell2) return this.weights.EXACT;
-        if (this.isSameWs(cell1, cell2)) return this.weights.WHITESPACE;
-        if (this.isNickname(cell1, cell2)) return this.weights.NICKNAME;
-        if (this.doesContain(cell1, cell2)) return this.weights.CONTAINS;
-        if (this.isTransposition(cell1, cell2)) return this.weights.TRANSPOSITION;
+        const w = column ? { ...this.weights, ...this.columnWeights[column] } : this.weights;
+        if (cell1 === cell2) return w.EXACT;
+        if (this.isSameWs(cell1, cell2)) return w.WHITESPACE;
+        if (this.isNickname(cell1, cell2)) return w.NICKNAME;
+        if (this.doesContain(cell1, cell2)) return w.CONTAINS;
+        if (this.isTransposition(cell1, cell2)) return w.TRANSPOSITION;
         return 0;
     }
 
@@ -63,7 +67,7 @@ export class Scorer {
             Object.keys(item).forEach(key => {
                 candidate[key] = item[key];
                 if (key !== idProperty) {
-                    weights[key] = this.getWeight(item[key], matchItem[key]);
+                    weights[key] = this.getWeight(item[key], matchItem[key], key);
                     matchTotal += weights[key];
                 }
             });
