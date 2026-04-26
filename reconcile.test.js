@@ -30,7 +30,7 @@ describe('Reconciler', () => {
         );
         view = makeView();
         scorer = new Scorer(WEIGHTS);
-        reconcile = new Reconciler(service, view, scorer);
+        reconcile = new Reconciler(service, view, scorer, 'testuser');
         await reconcile.init();
     });
 
@@ -114,6 +114,11 @@ describe('Reconciler', () => {
             const [, , listA, listB] = view.load.mock.lastCall;
             expect(listA.map(i => i.id)).toEqual([]);
             expect(listB.map(i => i.id)).toEqual([]);
+        });
+
+        it('calls service.set() with the current username as the third argument', () => {
+            reconcile.match({ a: '5', b: 'A' });
+            expect(service.set).toHaveBeenCalledWith('5', 'A', 'testuser');
         });
 
         it('restores items to listA and listB after undo', () => {

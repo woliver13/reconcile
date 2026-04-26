@@ -11,9 +11,13 @@ describe('SampleDataService', () => {
     describe('set()', () => {
         it('does not call alert()', () => {
             vi.stubGlobal('alert', vi.fn());
-            service.set('1', 'A');
+            service.set('1', 'A', 'testuser');
             expect(global.alert).not.toHaveBeenCalled();
             vi.unstubAllGlobals();
+        });
+
+        it('accepts a currentUsername argument without throwing', () => {
+            expect(() => service.set('1', 'A', 'testuser')).not.toThrow();
         });
     });
 
