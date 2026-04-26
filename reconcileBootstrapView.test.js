@@ -1,8 +1,5 @@
-/**
- * @jest-environment jsdom
- */
-
-const { BootstrapView } = require('./src/bootstrapView');
+import { describe, it, expect, beforeEach } from 'vitest';
+import { BootstrapView } from './src/bootstrapView';
 
 const WEIGHTS = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
 
