@@ -12,6 +12,7 @@ export class Reconciler {
         private readonly service: IService,
         private readonly view: IView,
         private readonly scorer: Scorer,
+        private readonly currentUsername: string = '',
     ) {
         view.onAction('next',  () => this.next());
         view.onAction('prev',  () => this.prev());
@@ -45,7 +46,7 @@ export class Reconciler {
     match(event: ActionEvent): void {
         const { a: aId, b: bId } = event;
         if (!aId || !bId) return;
-        this.service.set(aId, bId);
+        this.service.set(aId, bId, this.currentUsername);
         const lastMatch: Match = {
             a: this.listA.find(item => item[this.idProperty] === aId)!,
             b: this.listB.find(item => item[this.idProperty] === bId)!,

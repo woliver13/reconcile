@@ -63,8 +63,8 @@ export class SampleDataService implements IService {
         };
     }
 
-    set(aId: string, bId: string): void {
-        console.log(`matching ${aId} => ${bId}`);
+    set(aId: string, bId: string, currentUsername: string): void {
+        console.log(`matching ${aId} => ${bId} by ${currentUsername}`);
     }
 
     undo(aId: string, bId: string): void {

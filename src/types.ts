@@ -30,7 +30,7 @@ export interface Match {
 
 export interface IService {
     load(): Promise<{ a: Item[]; b: Item[] }>;
-    set(aId: string, bId: string): void;
+    set(aId: string, bId: string, currentUsername: string): void;
     undo(aId: string, bId: string): void;
 }
 
