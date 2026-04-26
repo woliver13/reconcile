@@ -1,4 +1,4 @@
-import { IService, Item } from './types';
+import { IService, Item, Difference } from './types';
 
 interface RawA {
     FirstName: string;
@@ -63,8 +63,8 @@ export class SampleDataService implements IService {
         };
     }
 
-    set(aId: string, bId: string, currentUsername: string): void {
-        console.log(`matching ${aId} => ${bId} by ${currentUsername}`);
+    set(aId: string, bId: string, currentUsername: string, differences: Difference[]): void {
+        console.log(`matching ${aId} => ${bId} by ${currentUsername}`, differences);
     }
 
     undo(aId: string, bId: string): void {
