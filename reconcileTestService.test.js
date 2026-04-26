@@ -1,6 +1,12 @@
-const service = require('./reconcileTestService');
+const { SampleDataService } = require('./src/sampleDataService');
 
-describe('reconcileTestService', () => {
+describe('SampleDataService', () => {
+    let service;
+
+    beforeEach(() => {
+        service = new SampleDataService();
+    });
+
     describe('set()', () => {
         it('does not call alert()', () => {
             global.alert = jest.fn();
@@ -20,13 +26,13 @@ describe('reconcileTestService', () => {
     describe('dateOfBirth formatting in standardised list A', () => {
         let listA;
 
-        beforeEach(() => {
-            service.load().done(function(data) { listA = data.a; });
+        beforeEach(async () => {
+            const data = await service.load();
+            listA = data.a;
         });
 
         it('formats July as month 07, not 06', () => {
             // Nick: new Date(1966, 6, 6) = 6 July 1966 — getMonth() returns 6 (0-indexed)
-            // without +1 the month would be '06' (June) instead of '07' (July)
             const nick = listA.find(item => item.firstName === 'Nick');
             expect(nick.dateOfBirth).toBe('19660706');
         });

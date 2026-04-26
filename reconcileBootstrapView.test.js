@@ -1,9 +1,11 @@
-const view = require('./reconcileBootstrapView');
-
-describe('reconcileBootstrapView', () => {
-    describe('setWeights()', () => {
-        it('is exported as a function', () => {
-            expect(typeof view.setWeights).toBe('function');
+describe('BootstrapView', () => {
+    describe('constructor', () => {
+        it('can be constructed with a container element and weights', () => {
+            jest.resetModules();
+            const $ = require('jquery');
+            const { BootstrapView } = require('./src/bootstrapView');
+            const view = new BootstrapView($('<div>'), { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 });
+            expect(view).toBeDefined();
         });
     });
 
@@ -13,9 +15,8 @@ describe('reconcileBootstrapView', () => {
         beforeEach(() => {
             jest.resetModules();
             $ = require('jquery');
-            localView = require('./reconcileBootstrapView');
-            localView.setMasterDiv($('<div>'));
-            localView.setWeights({ EXACT: 100, WHITESPACE: 80, CONTAINS: 30 });
+            const { BootstrapView } = require('./src/bootstrapView');
+            localView = new BootstrapView($('<div>'), { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 });
         });
 
         function matchButtonHtmls() {
