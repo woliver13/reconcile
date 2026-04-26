@@ -118,7 +118,74 @@ describe('Reconciler', () => {
 
         it('calls service.set() with the current username as the third argument', () => {
             reconcile.match({ a: '5', b: 'A' });
-            expect(service.set).toHaveBeenCalledWith('5', 'A', 'testuser');
+            expect(service.set).toHaveBeenCalledWith('5', 'A', 'testuser', expect.any(Array));
+        });
+
+        it('passes a differences array as the fourth argument to service.set()', () => {
+            reconcile.match({ a: '5', b: 'A' });
+            const differences = service.set.mock.calls[0][3];
+            expect(Array.isArray(differences)).toBe(true);
+        });
+
+        it('includes fields that differ between System A and System B in the differences array', () => {
+            reconcile.match({ a: '5', b: 'A' });
+            const differences = service.set.mock.calls[0][3];
+            const fields = differences.map(d => d.field);
+            expect(fields).toContain('firstName');
+            expect(fields).toContain('lastName');
+        });
+
+        it('each difference entry has field, aValue, and bValue', () => {
+            reconcile.match({ a: '5', b: 'A' });
+            const differences = service.set.mock.calls[0][3];
+            expect(differences.length).toBeGreaterThan(0);
+            for (const diff of differences) {
+                expect(diff).toHaveProperty('field');
+                expect(diff).toHaveProperty('aValue');
+                expect(diff).toHaveProperty('bValue');
+            }
+        });
+
+        it('excludes fields that match exactly from the differences array', async () => {
+            const svc = makeService(
+                [{ id: '1', name: 'Alice', city: 'Paris' }],
+                [{ id: 'X', name: 'Alice', city: 'London' }]
+            );
+            const v = makeView();
+            const r = new Reconciler(svc, v, new Scorer(WEIGHTS), 'user');
+            await r.init();
+            r.match({ a: '1', b: 'X' });
+            const differences = svc.set.mock.calls[0][3];
+            const fields = differences.map(d => d.field);
+            expect(fields).not.toContain('name');
+            expect(fields).toContain('city');
+        });
+
+        it('records correct aValue and bValue for each differing field', async () => {
+            const svc = makeService(
+                [{ id: '1', name: 'Alice', city: 'Paris' }],
+                [{ id: 'X', name: 'Alice', city: 'London' }]
+            );
+            const v = makeView();
+            const r = new Reconciler(svc, v, new Scorer(WEIGHTS), 'user');
+            await r.init();
+            r.match({ a: '1', b: 'X' });
+            const differences = svc.set.mock.calls[0][3];
+            const cityDiff = differences.find(d => d.field === 'city');
+            expect(cityDiff).toEqual({ field: 'city', aValue: 'Paris', bValue: 'London' });
+        });
+
+        it('passes an empty differences array when all fields match exactly', async () => {
+            const svc = makeService(
+                [{ id: '1', name: 'Alice', city: 'Paris' }],
+                [{ id: 'X', name: 'Alice', city: 'Paris' }]
+            );
+            const v = makeView();
+            const r = new Reconciler(svc, v, new Scorer(WEIGHTS), 'user');
+            await r.init();
+            r.match({ a: '1', b: 'X' });
+            const differences = svc.set.mock.calls[0][3];
+            expect(differences).toEqual([]);
         });
 
         it('restores items to listA and listB after undo', () => {

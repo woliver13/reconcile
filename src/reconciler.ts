@@ -1,4 +1,4 @@
-import { IService, IView, Item, Match, ActionEvent } from './types';
+import { IService, IView, Item, Match, ActionEvent, Difference } from './types';
 import { Scorer } from './scorer';
 
 export class Reconciler {
@@ -43,14 +43,25 @@ export class Reconciler {
         this.redraw();
     }
 
+    private computeDifferences(a: Item, b: Item): Difference[] {
+        const differences: Difference[] = [];
+        for (const field of Object.keys(a)) {
+            if (field === this.idProperty) continue;
+            if (a[field] !== b[field]) {
+                differences.push({ field, aValue: a[field], bValue: b[field] });
+            }
+        }
+        return differences;
+    }
+
     match(event: ActionEvent): void {
         const { a: aId, b: bId } = event;
         if (!aId || !bId) return;
-        this.service.set(aId, bId, this.currentUsername);
-        const lastMatch: Match = {
-            a: this.listA.find(item => item[this.idProperty] === aId)!,
-            b: this.listB.find(item => item[this.idProperty] === bId)!,
-        };
+        const aItem = this.listA.find(item => item[this.idProperty] === aId)!;
+        const bItem = this.listB.find(item => item[this.idProperty] === bId)!;
+        const differences = this.computeDifferences(aItem, bItem);
+        this.service.set(aId, bId, this.currentUsername, differences);
+        const lastMatch: Match = { a: aItem, b: bItem };
         this.memento.push(lastMatch);
         this.listA = this.listA.filter(item => item[this.idProperty] !== aId);
         this.listB = this.listB.filter(item => item[this.idProperty] !== bId);

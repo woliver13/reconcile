@@ -28,9 +28,15 @@ export interface Match {
     b: Item;
 }
 
+export interface Difference {
+    field: string;
+    aValue: unknown;
+    bValue: unknown;
+}
+
 export interface IService {
     load(): Promise<{ a: Item[]; b: Item[] }>;
-    set(aId: string, bId: string, currentUsername: string): void;
+    set(aId: string, bId: string, currentUsername: string, differences: Difference[]): void;
     undo(aId: string, bId: string): void;
 }
 
