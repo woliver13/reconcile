@@ -75,7 +75,26 @@ describe('Scorer', () => {
         });
 
         it('returns false for unknown names', () => {
-            expect(scorer.isNickname('Alice', 'Alicia')).toBe(false);
+            expect(scorer.isNickname('Barnabas', 'Ignatius')).toBe(false);
+        });
+
+        it('returns true for Peggy / Margaret (community dataset)', () => {
+            expect(scorer.isNickname('Peggy', 'Margaret')).toBe(true);
+        });
+
+        it('returns true for Chuck / Charles (community dataset)', () => {
+            expect(scorer.isNickname('Chuck', 'Charles')).toBe(true);
+        });
+
+        it('dataset contains significantly more than the original 5 groups', () => {
+            const map = scorer['nicknames'] ?? scorer;
+            // isNickname is backed by a map built from nicknames.json — spot-check size indirectly
+            const pairs = [
+                ['PEGGY', 'MARGARET'], ['CHUCK', 'CHARLES'], ['CINDY', 'CYNTHIA'],
+                ['HANK', 'HENRY'], ['PATTY', 'PATRICIA'], ['SANDY', 'SANDRA'],
+            ];
+            const matched = pairs.filter(([a, b]) => scorer.isNickname(a, b)).length;
+            expect(matched).toBe(pairs.length);
         });
     });
 
