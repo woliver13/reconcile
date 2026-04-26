@@ -1,3 +1,9 @@
+export interface Weights {
+    EXACT: number;
+    WHITESPACE: number;
+    CONTAINS: number;
+}
+
 export type ActionType = 'next' | 'prev' | 'undo' | 'match';
 
 export interface ActionEvent {

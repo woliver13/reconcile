@@ -1,7 +1,10 @@
 const { Reconciler } = require('./src/reconciler');
+const { Scorer } = require('./src/scorer');
+
+const WEIGHTS = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
 
 describe('Reconciler', () => {
-    let reconcile, service, view;
+    let reconcile, service, view, scorer;
 
     function makeService(a, b) {
         return {
@@ -25,25 +28,16 @@ describe('Reconciler', () => {
             [{ id: 'A', firstName: 'Nicholas', lastName: 'Zarkosi' }]
         );
         view = makeView();
-        reconcile = new Reconciler(service, view);
+        scorer = new Scorer(WEIGHTS);
+        reconcile = new Reconciler(service, view, scorer);
         await reconcile.init();
     });
 
-    describe('WEIGHTS', () => {
-        it('exports named weight constants used by the scoring algorithm', () => {
-            expect(reconcile.WEIGHTS).toEqual({
-                EXACT: 100,
-                WHITESPACE: 80,
-                CONTAINS: 30
-            });
-        });
-    });
-
-    describe('getCandidates()', () => {
+    describe('getCandidates() — integration via view.load', () => {
         async function setup(a, b) {
             const svc = makeService(a, b);
             const v = makeView();
-            const r = new Reconciler(svc, v);
+            const r = new Reconciler(svc, v, new Scorer(WEIGHTS));
             await r.init();
             return { r, v };
         }
@@ -152,7 +146,7 @@ describe('Reconciler', () => {
                     [{ id: 'A', firstName: 'Nicholas', lastName: 'Zarkosi' }]
                 );
                 view = makeView();
-                reconcile = new Reconciler(service, view);
+                reconcile = new Reconciler(service, view, new Scorer(WEIGHTS));
                 await reconcile.init();
             });
 

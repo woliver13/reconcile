@@ -1,14 +1,16 @@
 import { SampleDataService } from './sampleDataService';
 import { BootstrapView } from './bootstrapView';
 import { Reconciler } from './reconciler';
+import { Scorer } from './scorer';
+import $ from 'jquery';
 
 const WEIGHTS = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
 
 const container = document.querySelector<HTMLElement>('.reconcile')!;
-import $ from 'jquery';
 
 const service = new SampleDataService();
+const scorer  = new Scorer(WEIGHTS);
 const view    = new BootstrapView($(container), WEIGHTS);
-const reconciler = new Reconciler(service, view);
+const reconciler = new Reconciler(service, view, scorer);
 
 reconciler.init();
