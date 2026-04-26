@@ -10,7 +10,7 @@
     let masterDiv = null;
     let showList = false;
     let idProperty = 'id';
-    let weights = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
+    let weights = { EXACT: 100, WHITESPACE: 80, NICKNAME: 60, CONTAINS: 30, TRANSPOSITION: 20 };
 
     const setWeights = function(w) { weights = w; };
 
@@ -57,7 +57,9 @@
                     const cellDiv = $('<div class="col-md-1">' + item[key] + '</div>');
                     if (item.weights[key] === weights.EXACT) cellDiv.addClass('match-same');
                     if (item.weights[key] === weights.WHITESPACE) cellDiv.addClass('match-samews');
+                    if (item.weights[key] === weights.NICKNAME) cellDiv.addClass('match-nickname');
                     if (item.weights[key] === weights.CONTAINS) cellDiv.addClass('match-contains');
+                    if (item.weights[key] === weights.TRANSPOSITION) cellDiv.addClass('match-transposition');
                     candidateDiv.append(cellDiv);
                 }
             });
