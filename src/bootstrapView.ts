@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { IView, Item, Candidate, Match, ActionType, ActionEvent, Weights } from './types';
 
 export class BootstrapView implements IView {
@@ -6,25 +5,28 @@ export class BootstrapView implements IView {
     private readonly listeners: Partial<Record<ActionType, Array<(e: ActionEvent) => void>>> = {};
 
     constructor(
-        private readonly masterDiv: JQuery,
+        private readonly masterDiv: HTMLElement,
         private readonly weights: Weights,
     ) {}
 
     load(matchItem: Item, candidates: Candidate[], listA: Item[], listB: Item[], memento: Match[]): void {
-        this.masterDiv.empty();
+        this.masterDiv.innerHTML = '';
         if (listA.length > 0) {
             this.masterDiv.append(this.buildMatchLine(matchItem, memento.length > 0));
             this.masterDiv.append(this.buildHeaderDiv(matchItem));
             this.buildCandidates(matchItem, candidates).forEach(el => this.masterDiv.append(el));
             if (candidates.length === 1 || candidates[0].weights['matchTotal'] > candidates[1].weights['matchTotal']) {
-                $('button:contains("Match")').first().focus();
+                const matchBtn = this.masterDiv.querySelector<HTMLButtonElement>('button[data-b]');
+                matchBtn?.focus();
             }
         }
     }
 
     showError(status: unknown): void {
-        this.masterDiv.empty();
-        this.masterDiv.append($('<div>').text(String(status)));
+        this.masterDiv.innerHTML = '';
+        const div = document.createElement('div');
+        div.textContent = String(status);
+        this.masterDiv.append(div);
     }
 
     onAction(type: ActionType, listener: (e: ActionEvent) => void): void {
@@ -39,53 +41,98 @@ export class BootstrapView implements IView {
     private next(): void  { this.dispatch({ type: 'next' }); }
     private prev(): void  { this.dispatch({ type: 'prev' }); }
     private undo(): void  { this.dispatch({ type: 'undo' }); }
-    private match(e: JQuery.ClickEvent): void {
+    private match(e: MouseEvent): void {
+        const target = e.target as HTMLElement;
         this.dispatch({
             type: 'match',
-            a: $(e.target).attr('data-a'),
-            b: $(e.target).attr('data-b'),
+            a: target.getAttribute('data-a') ?? undefined,
+            b: target.getAttribute('data-b') ?? undefined,
         });
     }
 
-    private buildMatchLine(matchItem: Item, canUndo: boolean): JQuery {
-        const row = $('<div class="row">');
+    private el(tag: string, className: string): HTMLElement {
+        const elem = document.createElement(tag);
+        elem.className = className;
+        return elem;
+    }
+
+    private buildMatchLine(matchItem: Item, canUndo: boolean): HTMLElement {
+        const row = this.el('div', 'row');
         Object.keys(matchItem).forEach(key => {
-            if (key !== this.idProperty) row.append($('<div class="col-md-1">' + matchItem[key] + '</div>'));
+            if (key !== this.idProperty) {
+                const cell = this.el('div', 'col-md-1');
+                cell.textContent = String(matchItem[key]);
+                row.append(cell);
+            }
         });
-        row.append($('<div class="col-md-1"><button class="btn" accesskey="n">Next</button></div>'));
-        row.append($('<div class="col-md-1"><button class="btn" accesskey="p">Prev</button></div>'));
-        row.append($('<div class="col-md-1"><button class="btn" accesskey="u">Undo</button></div>'));
-        $(row).find('button:contains("Next")').on('click', () => this.next());
-        $(row).find('button:contains("Prev")').on('click', () => this.prev());
-        $(row).find('button:contains("Undo")').on('click', () => this.undo());
-        if (!canUndo) $(row).find('button:contains("Undo")').prop('disabled', 'disabled');
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'btn';
+        nextBtn.setAttribute('accesskey', 'n');
+        nextBtn.textContent = 'Next';
+        nextBtn.addEventListener('click', () => this.next());
+
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'btn';
+        prevBtn.setAttribute('accesskey', 'p');
+        prevBtn.textContent = 'Prev';
+        prevBtn.addEventListener('click', () => this.prev());
+
+        const undoBtn = document.createElement('button');
+        undoBtn.className = 'btn';
+        undoBtn.setAttribute('accesskey', 'u');
+        undoBtn.textContent = 'Undo';
+        undoBtn.addEventListener('click', () => this.undo());
+        if (!canUndo) undoBtn.disabled = true;
+
+        const nextWrap = this.el('div', 'col-md-1');
+        nextWrap.append(nextBtn);
+        const prevWrap = this.el('div', 'col-md-1');
+        prevWrap.append(prevBtn);
+        const undoWrap = this.el('div', 'col-md-1');
+        undoWrap.append(undoBtn);
+
+        row.append(nextWrap, prevWrap, undoWrap);
         return row;
     }
 
-    private buildHeaderDiv(matchItem: Item): JQuery {
-        const header = $('<div class="row" style="background-color:#000;color:#fff">');
+    private buildHeaderDiv(matchItem: Item): HTMLElement {
+        const header = this.el('div', 'row');
+        header.style.backgroundColor = '#000';
+        header.style.color = '#fff';
         Object.keys(matchItem).forEach(key => {
-            if (key !== this.idProperty) header.append($('<div class="col-md-1">' + key + '</div>'));
+            if (key !== this.idProperty) {
+                const cell = this.el('div', 'col-md-1');
+                cell.textContent = key;
+                header.append(cell);
+            }
         });
         return header;
     }
 
-    private buildCandidates(matchItem: Item, candidates: Candidate[]): JQuery[] {
+    private buildCandidates(matchItem: Item, candidates: Candidate[]): HTMLElement[] {
         return candidates.map((item, index) => {
-            const row = $('<div class="row">');
+            const row = this.el('div', 'row');
             Object.keys(item).forEach(key => {
                 if (key !== this.idProperty && key !== 'weights') {
-                    const cell = $('<div class="col-md-1">' + item[key] + '</div>');
-                    if (item.weights[key] === this.weights.EXACT)      cell.addClass('match-same');
-                    if (item.weights[key] === this.weights.WHITESPACE)  cell.addClass('match-samews');
-                    if (item.weights[key] === this.weights.CONTAINS)    cell.addClass('match-contains');
+                    const cell = this.el('div', 'col-md-1');
+                    cell.textContent = String(item[key]);
+                    if (item.weights[key] === this.weights.EXACT)      cell.classList.add('match-same');
+                    if (item.weights[key] === this.weights.WHITESPACE)  cell.classList.add('match-samews');
+                    if (item.weights[key] === this.weights.CONTAINS)    cell.classList.add('match-contains');
                     row.append(cell);
                 }
             });
-            const btn = $('<button class="btn"' + (index === 0 ? ' accesskey="m"' : '') +
-                ' data-a="' + matchItem[this.idProperty] + '" data-b="' + item[this.idProperty] + '">Match</button>');
-            $(btn).on('click', (e) => this.match(e));
-            row.append($('<div class="col-md-1">').append(btn));
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            if (index === 0) btn.setAttribute('accesskey', 'm');
+            btn.setAttribute('data-a', String(matchItem[this.idProperty]));
+            btn.setAttribute('data-b', String(item[this.idProperty]));
+            btn.textContent = 'Match';
+            btn.addEventListener('click', (e) => this.match(e));
+            const wrap = this.el('div', 'col-md-1');
+            wrap.append(btn);
+            row.append(wrap);
             return row;
         });
     }

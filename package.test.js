@@ -5,8 +5,8 @@ describe('package.json infrastructure', () => {
     expect(pkg.scripts.lint).toBe('eslint .');
   });
 
-  it('lists jquery as a devDependency', () => {
-    expect(pkg.devDependencies).toHaveProperty('jquery');
+  it('does not list jquery as a devDependency', () => {
+    expect(pkg.devDependencies).not.toHaveProperty('jquery');
   });
 
   it('lists bootstrap as a devDependency', () => {
