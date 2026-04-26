@@ -177,4 +177,46 @@ describe('Scorer', () => {
             expect(scorer.getCandidates(null, [{ id: 'X', name: 'Alice' }])).toEqual([]);
         });
     });
+
+    describe('per-column weights', () => {
+        it('uses column-specific EXACT weight when provided', () => {
+            const scorer = new Scorer(WEIGHTS, { name: { EXACT: 200 } });
+            const matchItem = { id: '1', name: 'Alice' };
+            const list = [{ id: 'X', name: 'Alice' }];
+            const [c] = scorer.getCandidates(matchItem, list);
+            expect(c.weights.name).toBe(200);
+        });
+
+        it('falls back to global weights for columns without overrides', () => {
+            const scorer = new Scorer(WEIGHTS, { name: { EXACT: 200 } });
+            const matchItem = { id: '1', name: 'Alice', city: 'Paris' };
+            const list = [{ id: 'X', name: 'Alice', city: 'Paris' }];
+            const [c] = scorer.getCandidates(matchItem, list);
+            expect(c.weights.city).toBe(100);
+        });
+
+        it('uses column-specific CONTAINS weight in isolation', () => {
+            const scorer = new Scorer(WEIGHTS, { name: { CONTAINS: 50 } });
+            const matchItem = { id: '1', name: 'Anders' };
+            const list = [{ id: 'X', name: 'Anderson' }];
+            const [c] = scorer.getCandidates(matchItem, list);
+            expect(c.weights.name).toBe(50);
+        });
+
+        it('reflects column weight override in matchTotal', () => {
+            const scorer = new Scorer(WEIGHTS, { name: { EXACT: 200 } });
+            const matchItem = { id: '1', name: 'Alice', city: 'Paris' };
+            const list = [{ id: 'X', name: 'Alice', city: 'Paris' }];
+            const [c] = scorer.getCandidates(matchItem, list);
+            expect(c.weights.matchTotal).toBe(300); // 200 (name) + 100 (city)
+        });
+
+        it('behaves identically to global weights when no column overrides given', () => {
+            const scorer = new Scorer(WEIGHTS);
+            const matchItem = { id: '1', name: 'Alice' };
+            const list = [{ id: 'X', name: 'Alice' }];
+            const [c] = scorer.getCandidates(matchItem, list);
+            expect(c.weights.name).toBe(100);
+        });
+    });
 });
