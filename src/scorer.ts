@@ -1,15 +1,8 @@
 import { Item, Candidate, Weights } from './types';
-
-const NICKNAME_GROUPS: string[][] = [
-    ['NICK', 'NICHOLAS'],
-    ['BILL', 'WILLIAM', 'WILL', 'WILLIE'],
-    ['BOB', 'ROBERT', 'ROB', 'BOBBY'],
-    ['JIM', 'JAMES', 'JIMMY'],
-    ['KATE', 'KATHERINE', 'KATHY', 'KATIE', 'KAT'],
-];
+import NICKNAME_GROUPS from './nicknames.json';
 
 const NICKNAME_MAP = new Map<string, number>();
-NICKNAME_GROUPS.forEach((group, idx) => group.forEach(name => NICKNAME_MAP.set(name, idx)));
+(NICKNAME_GROUPS as string[][]).forEach((group, idx) => group.forEach(name => NICKNAME_MAP.set(name, idx)));
 
 export class Scorer {
     constructor(private readonly weights: Weights) {}
