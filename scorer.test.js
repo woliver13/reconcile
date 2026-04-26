@@ -1,4 +1,5 @@
-const { Scorer } = require('./src/scorer');
+import { describe, it, expect, beforeEach } from 'vitest';
+import { Scorer } from './src/scorer';
 
 const WEIGHTS = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
 

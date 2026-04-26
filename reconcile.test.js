@@ -1,5 +1,6 @@
-const { Reconciler } = require('./src/reconciler');
-const { Scorer } = require('./src/scorer');
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { Reconciler } from './src/reconciler';
+import { Scorer } from './src/scorer';
 
 const WEIGHTS = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
 
@@ -8,17 +9,17 @@ describe('Reconciler', () => {
 
     function makeService(a, b) {
         return {
-            load: jest.fn().mockResolvedValue({ a, b }),
-            set: jest.fn(),
-            undo: jest.fn(),
+            load: vi.fn().mockResolvedValue({ a, b }),
+            set: vi.fn(),
+            undo: vi.fn(),
         };
     }
 
     function makeView() {
         return {
-            load: jest.fn(),
-            showError: jest.fn(),
-            onAction: jest.fn(),
+            load: vi.fn(),
+            showError: vi.fn(),
+            onAction: vi.fn(),
         };
     }
 

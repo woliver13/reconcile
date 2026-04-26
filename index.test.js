@@ -1,11 +1,12 @@
-const fs = require('fs');
-const path = require('path');
+import { describe, it, beforeAll, expect } from 'vitest';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 describe('index.html', () => {
     let html;
 
     beforeAll(() => {
-        html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+        html = readFileSync(join(__dirname, 'index.html'), 'utf8');
     });
 
     it('loads all external resources over HTTPS, not HTTP', () => {
