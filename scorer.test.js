@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Scorer } from './src/scorer';
 
-const WEIGHTS = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
+const WEIGHTS = { EXACT: 100, WHITESPACE: 80, NICKNAME: 60, CONTAINS: 30, TRANSPOSITION: 20 };
 
 describe('Scorer', () => {
     let scorer;
@@ -30,6 +30,62 @@ describe('Scorer', () => {
 
         it('returns 0 when values share no match', () => {
             expect(scorer.getWeight('Alice', 'Bob')).toBe(0);
+        });
+
+        it('returns TRANSPOSITION weight for a single adjacent character swap', () => {
+            expect(scorer.getWeight('Oliver', 'Oilver')).toBe(20);
+        });
+
+        it('returns TRANSPOSITION weight when normalised strings differ by one adjacent swap', () => {
+            expect(scorer.getWeight('Oli ver', 'Oilver')).toBe(20);
+        });
+
+        it('returns 0 when strings differ by more than one adjacent swap', () => {
+            expect(scorer.getWeight('Abcd', 'Badc')).toBe(0);
+        });
+    });
+
+    describe('isNickname()', () => {
+        it('returns true for Nick / Nicholas', () => {
+            expect(scorer.isNickname('Nick', 'Nicholas')).toBe(true);
+        });
+
+        it('is case-insensitive', () => {
+            expect(scorer.isNickname('nick', 'NICHOLAS')).toBe(true);
+        });
+
+        it('returns true for Bill / William', () => {
+            expect(scorer.isNickname('Bill', 'William')).toBe(true);
+        });
+
+        it('returns true for Bob / Robert', () => {
+            expect(scorer.isNickname('Bob', 'Robert')).toBe(true);
+        });
+
+        it('returns true for Jim / James', () => {
+            expect(scorer.isNickname('Jim', 'James')).toBe(true);
+        });
+
+        it('returns true for Kate / Katherine', () => {
+            expect(scorer.isNickname('Kate', 'Katherine')).toBe(true);
+        });
+
+        it('returns false for names in different groups', () => {
+            expect(scorer.isNickname('Nick', 'William')).toBe(false);
+        });
+
+        it('returns false for unknown names', () => {
+            expect(scorer.isNickname('Alice', 'Alicia')).toBe(false);
+        });
+    });
+
+    describe('getWeight() — NICKNAME priority', () => {
+        it('returns NICKNAME weight (60) for Nick / Nicholas', () => {
+            expect(scorer.getWeight('Nick', 'Nicholas')).toBe(60);
+        });
+
+        it('NICKNAME scores higher than CONTAINS', () => {
+            expect(scorer.getWeight('Nick', 'Nicholas')).toBeGreaterThan(scorer.getWeight('Anders', 'Anderson'));
         });
     });
 
