@@ -1,11 +1,5 @@
 import $ from 'jquery';
-import { IView, Item, Candidate, Match, ActionType, ActionEvent } from './types';
-
-interface Weights {
-    EXACT: number;
-    WHITESPACE: number;
-    CONTAINS: number;
-}
+import { IView, Item, Candidate, Match, ActionType, ActionEvent, Weights } from './types';
 
 export class BootstrapView implements IView {
     private readonly idProperty = 'id';

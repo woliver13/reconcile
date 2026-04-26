@@ -1,17 +1,18 @@
-import { IService, IView, Item, Candidate, Match, ActionEvent } from './types';
-
-const WEIGHTS = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 } as const;
+import { IService, IView, Item, Match, ActionEvent } from './types';
+import { Scorer } from './scorer';
 
 export class Reconciler {
-    readonly WEIGHTS = WEIGHTS;
-
     private position = 0;
     private listA: Item[] = [];
     private listB: Item[] = [];
     private readonly memento: Match[] = [];
     private readonly idProperty = 'id';
 
-    constructor(private readonly service: IService, private readonly view: IView) {
+    constructor(
+        private readonly service: IService,
+        private readonly view: IView,
+        private readonly scorer: Scorer,
+    ) {
         view.onAction('next',  () => this.next());
         view.onAction('prev',  () => this.prev());
         view.onAction('undo',  () => this.undo());
@@ -67,47 +68,6 @@ export class Reconciler {
 
     private redraw(): void {
         const matchItem = this.listA[this.position];
-        this.view.load(matchItem, this.getCandidates(matchItem, this.listB), this.listA, this.listB, this.memento);
-    }
-
-    private getCandidates(matchItem: Item, list: Item[]): Candidate[] {
-        if (matchItem == null) return [];
-        const result = list.map(item => {
-            const candidate: Record<string, unknown> = {};
-            const weights: Record<string, number> = {};
-            let matchTotal = 0;
-            Object.keys(item).forEach(key => {
-                candidate[key] = item[key];
-                if (key !== this.idProperty) {
-                    weights[key] = this.getWeight(item[key], matchItem[key]);
-                    matchTotal += weights[key];
-                }
-            });
-            weights['matchTotal'] = matchTotal;
-            candidate['weights'] = weights;
-            return candidate as Candidate;
-        });
-        return result
-            .filter(item => item.weights['matchTotal'] > 0)
-            .sort((a, b) => b.weights['matchTotal'] - a.weights['matchTotal']);
-    }
-
-    private getWeight(cell1: unknown, cell2: unknown): number {
-        if (cell1 == null) return 0;
-        if (cell2 == null) return 0;
-        if (cell1 === cell2) return WEIGHTS.EXACT;
-        if (this.isSameWs(cell1, cell2)) return WEIGHTS.WHITESPACE;
-        if (this.doesContain(cell1, cell2)) return WEIGHTS.CONTAINS;
-        return 0;
-    }
-
-    private isSameWs(cell1: unknown, cell2: unknown): boolean {
-        return String(cell1).toUpperCase().replace(/\s/g, '') === String(cell2).toUpperCase().replace(/\s/g, '');
-    }
-
-    private doesContain(cell1: unknown, cell2: unknown): boolean {
-        const s1 = String(cell1).toUpperCase();
-        const s2 = String(cell2).toUpperCase();
-        return s1.includes(s2) || s2.includes(s1);
+        this.view.load(matchItem, this.scorer.getCandidates(matchItem, this.listB), this.listA, this.listB, this.memento);
     }
 }
