@@ -4,7 +4,7 @@ import { Reconciler } from './reconciler';
 import { Scorer } from './scorer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const WEIGHTS = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
+const WEIGHTS = { EXACT: 100, WHITESPACE: 80, NICKNAME: 60, CONTAINS: 30, TRANSPOSITION: 20 };
 
 const container = document.querySelector<HTMLElement>('.reconcile')!;
 

@@ -1,7 +1,9 @@
 export interface Weights {
     EXACT: number;
     WHITESPACE: number;
+    NICKNAME: number;
     CONTAINS: number;
+    TRANSPOSITION: number;
 }
 
 export type ActionType = 'next' | 'prev' | 'undo' | 'match';
