@@ -70,6 +70,18 @@ describe('BootstrapView', () => {
             expect(undoBtn.disabled).toBe(true);
         });
 
+        it('labels the no-match button "No Match"', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            const noMatchBtn = Array.from(container.querySelectorAll('button')).find(b => b.textContent === 'No Match');
+            expect(noMatchBtn).toBeDefined();
+        });
+
+        it('assigns accesskey="n" to the No Match button', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            const noMatchBtn = Array.from(container.querySelectorAll('button')).find(b => b.textContent === 'No Match');
+            expect(noMatchBtn?.getAttribute('accesskey')).toBe('n');
+        });
+
         it('enables the Undo button when memento has entries', () => {
             const memento = [{ a: { id: '0', name: 'Alice' }, b: { id: '1', name: 'Alice' } }];
             view.load(matchItem, twoCandidates, [matchItem], [], memento);

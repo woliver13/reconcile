@@ -69,7 +69,7 @@ export class BootstrapView implements IView {
         const nextBtn = document.createElement('button');
         nextBtn.className = 'btn';
         nextBtn.setAttribute('accesskey', 'n');
-        nextBtn.textContent = 'Next';
+        nextBtn.textContent = 'No Match';
         nextBtn.addEventListener('click', () => this.next());
 
         const prevBtn = document.createElement('button');

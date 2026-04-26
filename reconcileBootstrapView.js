@@ -26,10 +26,10 @@
                 matchDiv.append(cellDiv);
             }
         });
-        matchDiv.append($('<div class="col-md-1"><button class="btn" accesskey="n">Next</button></div>'));
+        matchDiv.append($('<div class="col-md-1"><button class="btn" accesskey="n">No Match</button></div>'));
         matchDiv.append($('<div class="col-md-1"><button class="btn" accesskey="p">Prev</button></div>'));
         matchDiv.append($('<div class="col-md-1"><button class="btn" accesskey="u">Undo</button></div>'));
-        $(matchDiv).find('button:contains("Next")').on('click', next);
+        $(matchDiv).find('button:contains("No Match")').on('click', next);
         $(matchDiv).find('button:contains("Prev")').on('click', prev);
         $(matchDiv).find('button:contains("Undo")').on('click', undo);
         if (!canUndo) {
