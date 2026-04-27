@@ -14,9 +14,20 @@ export class BootstrapView implements IView {
         this.masterDiv.innerHTML = '';
         if (listA.length > 0) {
             const mismatchColors = this.getMismatchColors(matchItem, candidates);
-            this.masterDiv.append(this.buildMatchLine(matchItem, memento.length > 0, mismatchColors));
-            this.masterDiv.append(this.buildHeaderDiv(matchItem));
-            this.buildCandidates(matchItem, candidates, mismatchColors).forEach(el => this.masterDiv.append(el));
+            const table = document.createElement('table');
+            table.style.width = '100%';
+
+            const thead = document.createElement('thead');
+            thead.append(this.buildHeaderRow(matchItem));
+            table.append(thead);
+
+            const tbody = document.createElement('tbody');
+            tbody.append(this.buildMatchRow(matchItem, memento.length > 0, mismatchColors));
+            this.buildCandidateRows(matchItem, candidates, mismatchColors).forEach(row => tbody.append(row));
+            table.append(tbody);
+
+            this.masterDiv.append(table);
+
             if (candidates.length === 1 || candidates[0].weights['matchTotal'] > candidates[1].weights['matchTotal']) {
                 const matchBtn = this.masterDiv.querySelector<HTMLButtonElement>('button[data-b]');
                 matchBtn?.focus();
@@ -52,10 +63,10 @@ export class BootstrapView implements IView {
         });
     }
 
-    private el(tag: string, className: string): HTMLElement {
-        const elem = document.createElement(tag);
-        elem.className = className;
-        return elem;
+    private td(content?: string): HTMLTableCellElement {
+        const cell = document.createElement('td');
+        if (content !== undefined) cell.textContent = content;
+        return cell;
     }
 
     private getMismatchColors(matchItem: Item, candidates: Candidate[]): Record<string, string> {
@@ -72,14 +83,28 @@ export class BootstrapView implements IView {
         return colors;
     }
 
-    private buildMatchLine(matchItem: Item, canUndo: boolean, mismatchColors: Record<string, string>): HTMLElement {
-        const row = this.el('div', 'row');
+    private buildHeaderRow(matchItem: Item): HTMLTableRowElement {
+        const tr = document.createElement('tr');
+        tr.style.backgroundColor = '#000';
+        tr.style.color = '#fff';
         Object.keys(matchItem).forEach(key => {
             if (key !== this.idProperty) {
-                const cell = this.el('div', 'col');
-                cell.textContent = String(matchItem[key]);
+                const th = document.createElement('th');
+                th.textContent = key;
+                tr.append(th);
+            }
+        });
+        tr.append(document.createElement('th')); // button column
+        return tr;
+    }
+
+    private buildMatchRow(matchItem: Item, canUndo: boolean, mismatchColors: Record<string, string>): HTMLTableRowElement {
+        const tr = document.createElement('tr');
+        Object.keys(matchItem).forEach(key => {
+            if (key !== this.idProperty) {
+                const cell = this.td(String(matchItem[key]));
                 if (mismatchColors[key]) cell.style.backgroundColor = mismatchColors[key];
-                row.append(cell);
+                tr.append(cell);
             }
         });
 
@@ -102,44 +127,25 @@ export class BootstrapView implements IView {
         undoBtn.addEventListener('click', () => this.undo());
         if (!canUndo) undoBtn.disabled = true;
 
-        const nextWrap = this.el('div', 'col');
-        nextWrap.append(nextBtn);
-        const prevWrap = this.el('div', 'col');
-        prevWrap.append(prevBtn);
-        const undoWrap = this.el('div', 'col');
-        undoWrap.append(undoBtn);
-
-        row.append(nextWrap, prevWrap, undoWrap);
-        return row;
+        const btnCell = this.td();
+        btnCell.append(nextBtn, prevBtn, undoBtn);
+        tr.append(btnCell);
+        return tr;
     }
 
-    private buildHeaderDiv(matchItem: Item): HTMLElement {
-        const header = this.el('div', 'row');
-        header.style.backgroundColor = '#000';
-        header.style.color = '#fff';
-        Object.keys(matchItem).forEach(key => {
-            if (key !== this.idProperty) {
-                const cell = this.el('div', 'col');
-                cell.textContent = key;
-                header.append(cell);
-            }
-        });
-        return header;
-    }
-
-    private buildCandidates(matchItem: Item, candidates: Candidate[], mismatchColors: Record<string, string>): HTMLElement[] {
+    private buildCandidateRows(matchItem: Item, candidates: Candidate[], mismatchColors: Record<string, string>): HTMLTableRowElement[] {
         return candidates.map((item, index) => {
-            const row = this.el('div', 'row');
+            const tr = document.createElement('tr');
             Object.keys(item).forEach(key => {
                 if (key !== this.idProperty && key !== 'weights') {
-                    const cell = this.el('div', 'col');
-                    cell.textContent = String(item[key]);
+                    const cell = this.td(String(item[key]));
                     if (mismatchColors[key] && item[key] !== matchItem[key]) {
                         cell.style.backgroundColor = mismatchColors[key];
                     }
-                    row.append(cell);
+                    tr.append(cell);
                 }
             });
+
             const btn = document.createElement('button');
             btn.className = 'btn btn-success';
             if (index === 0) btn.setAttribute('accesskey', 'm');
@@ -147,10 +153,10 @@ export class BootstrapView implements IView {
             btn.setAttribute('data-b', String(item[this.idProperty]));
             btn.textContent = 'Match';
             btn.addEventListener('click', (e) => this.match(e));
-            const wrap = this.el('div', 'col');
-            wrap.append(btn);
-            row.append(wrap);
-            return row;
+            const btnCell = this.td();
+            btnCell.append(btn);
+            tr.append(btnCell);
+            return tr;
         });
     }
 }

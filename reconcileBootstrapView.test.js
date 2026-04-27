@@ -96,10 +96,27 @@ describe('BootstrapView', () => {
             expect(matchButtons.length).toBe(2);
         });
 
-        it('uses col class on data cells instead of col-md-1', () => {
+        it('renders a table element', () => {
             view.load(matchItem, twoCandidates, [matchItem], [], []);
-            expect(container.querySelectorAll('.col-md-1').length).toBe(0);
-            expect(container.querySelectorAll('.col').length).toBeGreaterThan(0);
+            expect(container.querySelector('table')).not.toBeNull();
+        });
+
+        it('renders header fields as th elements inside thead', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            const ths = container.querySelectorAll('thead th');
+            const texts = Array.from(ths).map(th => th.textContent);
+            expect(texts).toContain('name');
+        });
+
+        it('renders data cells as td elements inside tbody', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            expect(container.querySelectorAll('tbody td').length).toBeGreaterThan(0);
+        });
+
+        it('does not render div.row or div.col elements', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            expect(container.querySelectorAll('.row').length).toBe(0);
+            expect(container.querySelectorAll('.col').length).toBe(0);
         });
 
         it('labels the previous button "Previous"', () => {
@@ -160,9 +177,9 @@ describe('BootstrapView', () => {
             { id: '1', name: 'Bob', city: 'LA', weights: { name: 0, city: 0, matchTotal: 0 } },
         ];
 
-        function getRows() { return container.querySelectorAll('.row'); }
+        function getRows() { return container.querySelectorAll('tr'); }
         function cellByText(row, text) {
-            return Array.from(row.querySelectorAll('.col')).find(c => c.textContent === text);
+            return Array.from(row.querySelectorAll('td, th')).find(c => c.textContent === text);
         }
 
         it('does not apply scorer CSS classes', () => {
@@ -174,14 +191,14 @@ describe('BootstrapView', () => {
 
         it('applies a background color to the System A cell for a mismatching column', () => {
             view.load(multiItem, candidatesCityMismatch, [multiItem], [], []);
-            const systemARow = getRows()[0];
+            const systemARow = getRows()[1]; // 0=header, 1=SystemA, 2+=candidates
             const cityCell = cellByText(systemARow, 'NYC');
             expect(cityCell.style.backgroundColor).not.toBe('');
         });
 
         it('does not apply background color to the System A cell for a non-mismatching column', () => {
             view.load(multiItem, candidatesCityMismatch, [multiItem], [], []);
-            const systemARow = getRows()[0];
+            const systemARow = getRows()[1];
             const nameCell = cellByText(systemARow, 'Alice');
             expect(nameCell.style.backgroundColor).toBe('');
         });
@@ -189,8 +206,8 @@ describe('BootstrapView', () => {
         it('applies the same color to non-matching System B cells in the same column', () => {
             view.load(multiItem, candidatesCityMismatch, [multiItem], [], []);
             const rows = getRows();
-            const systemARow = rows[0];
-            const candidateRow = rows[2]; // 0=SystemA, 1=Header, 2=first candidate
+            const systemARow = rows[1];  // 0=header, 1=SystemA, 2+=candidates
+            const candidateRow = rows[2];
             const systemACityColor = cellByText(systemARow, 'NYC').style.backgroundColor;
             const candidateCityColor = cellByText(candidateRow, 'LA').style.backgroundColor;
             expect(candidateCityColor).toBe(systemACityColor);
@@ -205,8 +222,8 @@ describe('BootstrapView', () => {
 
         it('applies no background color when all columns match', () => {
             view.load(multiItem, candidatesAllMatch, [multiItem], [], []);
-            const systemARow = getRows()[0];
-            const dataCells = Array.from(systemARow.querySelectorAll('.col'))
+            const systemARow = getRows()[1];
+            const dataCells = Array.from(systemARow.querySelectorAll('td'))
                 .filter(c => c.querySelector('button') === null);
             for (const cell of dataCells) {
                 expect(cell.style.backgroundColor).toBe('');
@@ -215,7 +232,7 @@ describe('BootstrapView', () => {
 
         it('assigns distinct colors to different mismatching columns', () => {
             view.load(multiItem, candidatesBothMismatch, [multiItem], [], []);
-            const systemARow = getRows()[0];
+            const systemARow = getRows()[1];
             const nameColor = cellByText(systemARow, 'Alice').style.backgroundColor;
             const cityColor = cellByText(systemARow, 'NYC').style.backgroundColor;
             expect(nameColor).not.toBe('');
