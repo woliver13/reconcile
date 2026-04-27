@@ -113,6 +113,12 @@ describe('BootstrapView', () => {
             expect(container.querySelectorAll('tbody td').length).toBeGreaterThan(0);
         });
 
+        it('applies a bottom border to the System A row to separate it from candidates', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            const systemARow = container.querySelectorAll('tbody tr')[0];
+            expect(systemARow.style.borderBottom).not.toBe('');
+        });
+
         it('does not render div.row or div.col elements', () => {
             view.load(matchItem, twoCandidates, [matchItem], [], []);
             expect(container.querySelectorAll('.row').length).toBe(0);

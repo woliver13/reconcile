@@ -100,6 +100,7 @@ export class BootstrapView implements IView {
 
     private buildMatchRow(matchItem: Item, canUndo: boolean, mismatchColors: Record<string, string>): HTMLTableRowElement {
         const tr = document.createElement('tr');
+        tr.style.borderBottom = '3px solid #333';
         Object.keys(matchItem).forEach(key => {
             if (key !== this.idProperty) {
                 const cell = this.td(String(matchItem[key]));
