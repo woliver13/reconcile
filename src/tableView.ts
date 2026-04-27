@@ -1,6 +1,6 @@
 import { IView, Item, Candidate, Match, ActionType, ActionEvent, Weights } from './types';
 
-export class BootstrapView implements IView {
+export class TableView implements IView {
     private readonly idProperty = 'id';
     private readonly listeners: Partial<Record<ActionType, Array<(e: ActionEvent) => void>>> = {};
     private readonly columnColors = ['#ffff00', '#add8e6', '#90ee90', '#ffb6c1', '#ffa07a', '#dda0dd'];
