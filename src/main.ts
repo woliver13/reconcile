@@ -1,5 +1,5 @@
 import { SampleDataService } from './sampleDataService';
-import { BootstrapView } from './bootstrapView';
+import { TableView } from './tableView';
 import { Reconciler } from './reconciler';
 import { Scorer } from './scorer';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -10,7 +10,7 @@ const container = document.querySelector<HTMLElement>('.reconcile')!;
 
 const service = new SampleDataService();
 const scorer  = new Scorer(WEIGHTS);
-const view    = new BootstrapView(container, WEIGHTS);
+const view    = new TableView(container, WEIGHTS);
 const reconciler = new Reconciler(service, view, scorer);
 
 reconciler.init();

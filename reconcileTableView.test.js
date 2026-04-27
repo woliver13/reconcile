@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { BootstrapView } from './src/bootstrapView';
+import { TableView } from './src/tableView';
 
 const WEIGHTS = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
 
@@ -7,10 +7,10 @@ function makeContainer() {
     return document.createElement('div');
 }
 
-describe('BootstrapView', () => {
+describe('TableView', () => {
     describe('constructor', () => {
         it('can be constructed with a container element and weights', () => {
-            const view = new BootstrapView(makeContainer(), WEIGHTS);
+            const view = new TableView(makeContainer(), WEIGHTS);
             expect(view).toBeDefined();
         });
     });
@@ -20,7 +20,7 @@ describe('BootstrapView', () => {
 
         beforeEach(() => {
             container = makeContainer();
-            view = new BootstrapView(container, WEIGHTS);
+            view = new TableView(container, WEIGHTS);
         });
 
         const matchItem = { id: '0', name: 'Alice' };
@@ -190,7 +190,7 @@ describe('BootstrapView', () => {
 
         beforeEach(() => {
             container = makeContainer();
-            view = new BootstrapView(container, WEIGHTS);
+            view = new TableView(container, WEIGHTS);
         });
 
         const multiItem = { id: '0', name: 'Alice', city: 'NYC' };
