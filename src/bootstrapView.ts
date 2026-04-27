@@ -84,19 +84,19 @@ export class BootstrapView implements IView {
         });
 
         const nextBtn = document.createElement('button');
-        nextBtn.className = 'btn';
+        nextBtn.className = 'btn btn-warning';
         nextBtn.setAttribute('accesskey', 'n');
         nextBtn.textContent = 'No Match';
         nextBtn.addEventListener('click', () => this.next());
 
         const prevBtn = document.createElement('button');
-        prevBtn.className = 'btn';
+        prevBtn.className = 'btn btn-secondary';
         prevBtn.setAttribute('accesskey', 'p');
-        prevBtn.textContent = 'Prev';
+        prevBtn.textContent = 'Previous';
         prevBtn.addEventListener('click', () => this.prev());
 
         const undoBtn = document.createElement('button');
-        undoBtn.className = 'btn';
+        undoBtn.className = 'btn btn-secondary';
         undoBtn.setAttribute('accesskey', 'u');
         undoBtn.textContent = 'Undo';
         undoBtn.addEventListener('click', () => this.undo());
@@ -141,7 +141,7 @@ export class BootstrapView implements IView {
                 }
             });
             const btn = document.createElement('button');
-            btn.className = 'btn';
+            btn.className = 'btn btn-success';
             if (index === 0) btn.setAttribute('accesskey', 'm');
             btn.setAttribute('data-a', String(matchItem[this.idProperty]));
             btn.setAttribute('data-b', String(item[this.idProperty]));
