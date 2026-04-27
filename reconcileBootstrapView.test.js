@@ -161,6 +161,28 @@ describe('BootstrapView', () => {
             expect(matchBtns.length).toBeGreaterThan(0);
             matchBtns.forEach(btn => expect(btn.classList.contains('btn-success')).toBe(true));
         });
+
+        it('renders Previous button outside the table', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            const prevInsideTable = container.querySelector('table button[accesskey="p"]');
+            expect(prevInsideTable).toBeNull();
+            const prevOutside = Array.from(container.querySelectorAll('button')).find(b => b.textContent === 'Previous');
+            expect(prevOutside).toBeDefined();
+        });
+
+        it('renders Undo button outside the table', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            const undoInsideTable = container.querySelector('table button[accesskey="u"]');
+            expect(undoInsideTable).toBeNull();
+            const undoOutside = Array.from(container.querySelectorAll('button')).find(b => b.textContent === 'Undo');
+            expect(undoOutside).toBeDefined();
+        });
+
+        it('keeps No Match button inside the table', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            const noMatchInsideTable = container.querySelector('table button[accesskey="n"]');
+            expect(noMatchInsideTable).not.toBeNull();
+        });
     });
 
     describe('per-column mismatch coloring', () => {

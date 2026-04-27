@@ -22,11 +22,15 @@ export class BootstrapView implements IView {
             table.append(thead);
 
             const tbody = document.createElement('tbody');
-            tbody.append(this.buildMatchRow(matchItem, memento.length > 0, mismatchColors));
+            tbody.append(this.buildMatchRow(matchItem, mismatchColors));
             this.buildCandidateRows(matchItem, candidates, mismatchColors).forEach(row => tbody.append(row));
             table.append(tbody);
 
             this.masterDiv.append(table);
+
+            const controlBar = document.createElement('div');
+            controlBar.append(this.buildPrevButton(), this.buildUndoButton(memento.length > 0));
+            this.masterDiv.append(controlBar);
 
             if (candidates.length === 1 || candidates[0].weights['matchTotal'] > candidates[1].weights['matchTotal']) {
                 const matchBtn = this.masterDiv.querySelector<HTMLButtonElement>('button[data-b]');
@@ -98,7 +102,7 @@ export class BootstrapView implements IView {
         return tr;
     }
 
-    private buildMatchRow(matchItem: Item, canUndo: boolean, mismatchColors: Record<string, string>): HTMLTableRowElement {
+    private buildMatchRow(matchItem: Item, mismatchColors: Record<string, string>): HTMLTableRowElement {
         const tr = document.createElement('tr');
         tr.style.borderBottom = '3px solid #333';
         Object.keys(matchItem).forEach(key => {
@@ -115,23 +119,29 @@ export class BootstrapView implements IView {
         nextBtn.textContent = 'No Match';
         nextBtn.addEventListener('click', () => this.next());
 
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'btn btn-secondary';
-        prevBtn.setAttribute('accesskey', 'p');
-        prevBtn.textContent = 'Previous';
-        prevBtn.addEventListener('click', () => this.prev());
-
-        const undoBtn = document.createElement('button');
-        undoBtn.className = 'btn btn-secondary';
-        undoBtn.setAttribute('accesskey', 'u');
-        undoBtn.textContent = 'Undo';
-        undoBtn.addEventListener('click', () => this.undo());
-        if (!canUndo) undoBtn.disabled = true;
-
         const btnCell = this.td();
-        btnCell.append(nextBtn, prevBtn, undoBtn);
+        btnCell.append(nextBtn);
         tr.append(btnCell);
         return tr;
+    }
+
+    private buildPrevButton(): HTMLButtonElement {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-secondary';
+        btn.setAttribute('accesskey', 'p');
+        btn.textContent = 'Previous';
+        btn.addEventListener('click', () => this.prev());
+        return btn;
+    }
+
+    private buildUndoButton(canUndo: boolean): HTMLButtonElement {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-secondary';
+        btn.setAttribute('accesskey', 'u');
+        btn.textContent = 'Undo';
+        btn.addEventListener('click', () => this.undo());
+        if (!canUndo) btn.disabled = true;
+        return btn;
     }
 
     private buildCandidateRows(matchItem: Item, candidates: Candidate[], mismatchColors: Record<string, string>): HTMLTableRowElement[] {
