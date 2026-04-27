@@ -96,6 +96,12 @@ describe('BootstrapView', () => {
             expect(matchButtons.length).toBe(2);
         });
 
+        it('uses col class on data cells instead of col-md-1', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            expect(container.querySelectorAll('.col-md-1').length).toBe(0);
+            expect(container.querySelectorAll('.col').length).toBeGreaterThan(0);
+        });
+
         it('labels the previous button "Previous"', () => {
             view.load(matchItem, twoCandidates, [matchItem], [], []);
             const prevBtn = Array.from(container.querySelectorAll('button')).find(b => b.textContent === 'Previous');
@@ -156,7 +162,7 @@ describe('BootstrapView', () => {
 
         function getRows() { return container.querySelectorAll('.row'); }
         function cellByText(row, text) {
-            return Array.from(row.querySelectorAll('.col-md-1')).find(c => c.textContent === text);
+            return Array.from(row.querySelectorAll('.col')).find(c => c.textContent === text);
         }
 
         it('does not apply scorer CSS classes', () => {
@@ -200,7 +206,7 @@ describe('BootstrapView', () => {
         it('applies no background color when all columns match', () => {
             view.load(multiItem, candidatesAllMatch, [multiItem], [], []);
             const systemARow = getRows()[0];
-            const dataCells = Array.from(systemARow.querySelectorAll('.col-md-1'))
+            const dataCells = Array.from(systemARow.querySelectorAll('.col'))
                 .filter(c => c.querySelector('button') === null);
             for (const cell of dataCells) {
                 expect(cell.style.backgroundColor).toBe('');
