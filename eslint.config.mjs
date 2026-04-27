@@ -2,10 +2,10 @@ import js from "@eslint/js";
 import globals from "globals";
 
 export default [
-    { ignores: ["node_modules/", "coverage/"] },
+    { ignores: ["node_modules/", "coverage/", "dist/"] },
     js.configs.recommended,
     {
-        files: ["reconcile.js", "reconcileBootstrapView.js", "reconcileTestService.js"],
+        files: ["reconcile.js", "reconcileTestService.js"],
         languageOptions: {
             globals: {
                 ...globals.browser,
@@ -15,11 +15,20 @@ export default [
         }
     },
     {
+        files: ["**/*.mjs"],
+        languageOptions: {
+            globals: {
+                ...globals.node,
+            }
+        }
+    },
+    {
         files: ["**/*.test.js", "__mocks__/**/*.js"],
         languageOptions: {
             globals: {
                 ...globals.jest,
                 ...globals.node,
+                ...globals.browser,
             }
         }
     },

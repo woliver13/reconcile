@@ -87,8 +87,6 @@ describe('Scorer', () => {
         });
 
         it('dataset contains significantly more than the original 5 groups', () => {
-            const map = scorer['nicknames'] ?? scorer;
-            // isNickname is backed by a map built from nicknames.json — spot-check size indirectly
             const pairs = [
                 ['PEGGY', 'MARGARET'], ['CHUCK', 'CHARLES'], ['CINDY', 'CYNTHIA'],
                 ['HANK', 'HENRY'], ['PATTY', 'PATRICIA'], ['SANDY', 'SANDRA'],
