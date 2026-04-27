@@ -76,7 +76,7 @@ export class BootstrapView implements IView {
         const row = this.el('div', 'row');
         Object.keys(matchItem).forEach(key => {
             if (key !== this.idProperty) {
-                const cell = this.el('div', 'col-md-1');
+                const cell = this.el('div', 'col');
                 cell.textContent = String(matchItem[key]);
                 if (mismatchColors[key]) cell.style.backgroundColor = mismatchColors[key];
                 row.append(cell);
@@ -102,11 +102,11 @@ export class BootstrapView implements IView {
         undoBtn.addEventListener('click', () => this.undo());
         if (!canUndo) undoBtn.disabled = true;
 
-        const nextWrap = this.el('div', 'col-md-1');
+        const nextWrap = this.el('div', 'col');
         nextWrap.append(nextBtn);
-        const prevWrap = this.el('div', 'col-md-1');
+        const prevWrap = this.el('div', 'col');
         prevWrap.append(prevBtn);
-        const undoWrap = this.el('div', 'col-md-1');
+        const undoWrap = this.el('div', 'col');
         undoWrap.append(undoBtn);
 
         row.append(nextWrap, prevWrap, undoWrap);
@@ -119,7 +119,7 @@ export class BootstrapView implements IView {
         header.style.color = '#fff';
         Object.keys(matchItem).forEach(key => {
             if (key !== this.idProperty) {
-                const cell = this.el('div', 'col-md-1');
+                const cell = this.el('div', 'col');
                 cell.textContent = key;
                 header.append(cell);
             }
@@ -132,7 +132,7 @@ export class BootstrapView implements IView {
             const row = this.el('div', 'row');
             Object.keys(item).forEach(key => {
                 if (key !== this.idProperty && key !== 'weights') {
-                    const cell = this.el('div', 'col-md-1');
+                    const cell = this.el('div', 'col');
                     cell.textContent = String(item[key]);
                     if (mismatchColors[key] && item[key] !== matchItem[key]) {
                         cell.style.backgroundColor = mismatchColors[key];
@@ -147,7 +147,7 @@ export class BootstrapView implements IView {
             btn.setAttribute('data-b', String(item[this.idProperty]));
             btn.textContent = 'Match';
             btn.addEventListener('click', (e) => this.match(e));
-            const wrap = this.el('div', 'col-md-1');
+            const wrap = this.el('div', 'col');
             wrap.append(btn);
             row.append(wrap);
             return row;
