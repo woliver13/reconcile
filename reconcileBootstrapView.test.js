@@ -95,6 +95,43 @@ describe('BootstrapView', () => {
             const matchButtons = Array.from(container.querySelectorAll('button')).filter(b => b.textContent === 'Match');
             expect(matchButtons.length).toBe(2);
         });
+
+        it('labels the previous button "Previous"', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            const prevBtn = Array.from(container.querySelectorAll('button')).find(b => b.textContent === 'Previous');
+            expect(prevBtn).toBeDefined();
+        });
+
+        it('does not render a button labelled "Prev"', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            const prevBtn = Array.from(container.querySelectorAll('button')).find(b => b.textContent === 'Prev');
+            expect(prevBtn).toBeUndefined();
+        });
+
+        it('gives the No Match button a btn-warning class', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            const btn = Array.from(container.querySelectorAll('button')).find(b => b.textContent === 'No Match');
+            expect(btn?.classList.contains('btn-warning')).toBe(true);
+        });
+
+        it('gives the Previous button a btn-secondary class', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            const btn = Array.from(container.querySelectorAll('button')).find(b => b.textContent === 'Previous');
+            expect(btn?.classList.contains('btn-secondary')).toBe(true);
+        });
+
+        it('gives the Undo button a btn-secondary class', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            const btn = Array.from(container.querySelectorAll('button')).find(b => b.textContent === 'Undo');
+            expect(btn?.classList.contains('btn-secondary')).toBe(true);
+        });
+
+        it('gives each Match button a btn-success class', () => {
+            view.load(matchItem, twoCandidates, [matchItem], [], []);
+            const matchBtns = Array.from(container.querySelectorAll('button')).filter(b => b.textContent === 'Match');
+            expect(matchBtns.length).toBeGreaterThan(0);
+            matchBtns.forEach(btn => expect(btn.classList.contains('btn-success')).toBe(true));
+        });
     });
 
     describe('per-column mismatch coloring', () => {
