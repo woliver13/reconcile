@@ -1,12 +1,12 @@
 # reconcile
 
-A TypeScript tool for manual record reconciliation — surfacing likely matches between two lists so a human can confirm or skip them.
+A TypeScript tool for manual record reconciliation — surfacing likely matches between two lists so a human can confirm or pass on them.
 
 Manual reconciliation is a common part of system-integration work. Automated matching catches most duplicates, but a residual set requires human judgement. This project addresses that residual set.
 
 ## How it works
 
-The app loads two lists from a service, scores every item in list B against the current item in list A, ranks the candidates by score, and presents them for a match/skip decision. Confirmed matches are recorded via the service; any match can be undone.
+The app loads two lists from a service, scores every item in list B against the current item in list A, ranks the candidates by score, and presents them for a match/no-match decision. Confirmed matches are recorded via the service; any match can be undone.
 
 ### Scoring
 
@@ -21,6 +21,27 @@ Each field in a candidate is scored independently against the corresponding fiel
 | Transposition | 20 | `Oliver` ≈ `Oilver` (exactly one adjacent character swap) |
 
 Weights are constructor-injected into `Scorer` and `BootstrapView`, so they can be tuned without changing source code.
+
+Individual columns can override any weight via the optional `ColumnWeights` map passed as a second argument to `Scorer`:
+
+```typescript
+const columnWeights: ColumnWeights = {
+    lastName: { NICKNAME: 0 },   // disable nickname matching for this column
+    dob:      { EXACT: 200 },    // double-weight exact matches on date of birth
+};
+const scorer = new Scorer(WEIGHTS, columnWeights);
+```
+
+Any weight not listed in a column's entry falls back to the global `WEIGHTS` value.
+
+### Visual highlights
+
+For each column that has at least one mismatch across the candidate list, a distinct background color is applied to:
+
+- the System A field for that column, and
+- any System B cell in that column whose value differs from System A.
+
+Matching cells and columns with no mismatches remain uncolored. Colors are assigned in order from a fixed palette (yellow, light blue, light green, …) so each mismatching column is visually distinct at a glance.
 
 ### Nickname matching
 
@@ -39,7 +60,7 @@ The script validates that no name appears in more than one group before writing 
 ```
 src/
   main.ts              — entry point; wires service, scorer, view, and reconciler
-  reconciler.ts        — controller; drives the match/skip/undo workflow
+  reconciler.ts        — controller; drives the match/no-match/undo workflow
   scorer.ts            — Scorer class; scores a candidate against a match item
   bootstrapView.ts     — BootstrapView class; renders UI with Bootstrap 5, no jQuery
   sampleDataService.ts — in-browser demo service with synthetic data
@@ -52,12 +73,20 @@ The `IService` interface decouples the controller from any particular backend:
 ```typescript
 interface IService {
     load(): Promise<{ a: Item[]; b: Item[] }>;
-    set(aId: string, bId: string): void;
+    set(aId: string, bId: string, currentUsername: string, differences: Difference[]): void;
     undo(aId: string, bId: string): void;
+}
+
+interface Difference {
+    field: string;
+    aValue: unknown;
+    bValue: unknown;
 }
 ```
 
 `load()` must return two lists of flyweights with identical property sets. All properties must be present, even if `null`.
+
+`set()` receives the IDs of the matched pair, the username of the operator who confirmed the match, and a `Difference` array listing every field where System A and System B values differ — useful for backend auditing.
 
 ## Development
 
