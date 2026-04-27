@@ -3,6 +3,7 @@ import { IView, Item, Candidate, Match, ActionType, ActionEvent, Weights } from 
 export class BootstrapView implements IView {
     private readonly idProperty = 'id';
     private readonly listeners: Partial<Record<ActionType, Array<(e: ActionEvent) => void>>> = {};
+    private readonly columnColors = ['#ffff00', '#add8e6', '#90ee90', '#ffb6c1', '#ffa07a', '#dda0dd'];
 
     constructor(
         private readonly masterDiv: HTMLElement,
@@ -12,9 +13,10 @@ export class BootstrapView implements IView {
     load(matchItem: Item, candidates: Candidate[], listA: Item[], listB: Item[], memento: Match[]): void {
         this.masterDiv.innerHTML = '';
         if (listA.length > 0) {
-            this.masterDiv.append(this.buildMatchLine(matchItem, memento.length > 0));
+            const mismatchColors = this.getMismatchColors(matchItem, candidates);
+            this.masterDiv.append(this.buildMatchLine(matchItem, memento.length > 0, mismatchColors));
             this.masterDiv.append(this.buildHeaderDiv(matchItem));
-            this.buildCandidates(matchItem, candidates).forEach(el => this.masterDiv.append(el));
+            this.buildCandidates(matchItem, candidates, mismatchColors).forEach(el => this.masterDiv.append(el));
             if (candidates.length === 1 || candidates[0].weights['matchTotal'] > candidates[1].weights['matchTotal']) {
                 const matchBtn = this.masterDiv.querySelector<HTMLButtonElement>('button[data-b]');
                 matchBtn?.focus();
@@ -56,12 +58,27 @@ export class BootstrapView implements IView {
         return elem;
     }
 
-    private buildMatchLine(matchItem: Item, canUndo: boolean): HTMLElement {
+    private getMismatchColors(matchItem: Item, candidates: Candidate[]): Record<string, string> {
+        const colors: Record<string, string> = {};
+        let colorIdx = 0;
+        Object.keys(matchItem)
+            .filter(k => k !== this.idProperty)
+            .forEach(key => {
+                if (candidates.some(c => c[key] !== matchItem[key])) {
+                    colors[key] = this.columnColors[colorIdx % this.columnColors.length];
+                    colorIdx++;
+                }
+            });
+        return colors;
+    }
+
+    private buildMatchLine(matchItem: Item, canUndo: boolean, mismatchColors: Record<string, string>): HTMLElement {
         const row = this.el('div', 'row');
         Object.keys(matchItem).forEach(key => {
             if (key !== this.idProperty) {
                 const cell = this.el('div', 'col-md-1');
                 cell.textContent = String(matchItem[key]);
+                if (mismatchColors[key]) cell.style.backgroundColor = mismatchColors[key];
                 row.append(cell);
             }
         });
@@ -110,16 +127,16 @@ export class BootstrapView implements IView {
         return header;
     }
 
-    private buildCandidates(matchItem: Item, candidates: Candidate[]): HTMLElement[] {
+    private buildCandidates(matchItem: Item, candidates: Candidate[], mismatchColors: Record<string, string>): HTMLElement[] {
         return candidates.map((item, index) => {
             const row = this.el('div', 'row');
             Object.keys(item).forEach(key => {
                 if (key !== this.idProperty && key !== 'weights') {
                     const cell = this.el('div', 'col-md-1');
                     cell.textContent = String(item[key]);
-                    if (item.weights[key] === this.weights.EXACT)      cell.classList.add('match-same');
-                    if (item.weights[key] === this.weights.WHITESPACE)  cell.classList.add('match-samews');
-                    if (item.weights[key] === this.weights.CONTAINS)    cell.classList.add('match-contains');
+                    if (mismatchColors[key] && item[key] !== matchItem[key]) {
+                        cell.style.backgroundColor = mismatchColors[key];
+                    }
                     row.append(cell);
                 }
             });

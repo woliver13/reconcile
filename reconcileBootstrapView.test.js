@@ -89,18 +89,95 @@ describe('BootstrapView', () => {
             expect(undoBtn.disabled).toBe(false);
         });
 
-        it('applies match-same class to cells with EXACT weight', () => {
-            const candidates = [{ id: '1', name: 'Alice', weights: { name: WEIGHTS.EXACT, matchTotal: 100 } }];
-            view.load(matchItem, candidates, [matchItem], [], []);
-            const sameCells = container.querySelectorAll('.match-same');
-            expect(sameCells.length).toBeGreaterThan(0);
-        });
-
         it('clears the container on subsequent load() calls', () => {
             view.load(matchItem, twoCandidates, [matchItem], [], []);
             view.load(matchItem, twoCandidates, [matchItem], [], []);
             const matchButtons = Array.from(container.querySelectorAll('button')).filter(b => b.textContent === 'Match');
             expect(matchButtons.length).toBe(2);
+        });
+    });
+
+    describe('per-column mismatch coloring', () => {
+        let container, view;
+
+        beforeEach(() => {
+            container = makeContainer();
+            view = new BootstrapView(container, WEIGHTS);
+        });
+
+        const multiItem = { id: '0', name: 'Alice', city: 'NYC' };
+
+        const candidatesCityMismatch = [
+            { id: '1', name: 'Alice', city: 'LA', weights: { name: 100, city: 0, matchTotal: 100 } },
+        ];
+        const candidatesAllMatch = [
+            { id: '1', name: 'Alice', city: 'NYC', weights: { name: 100, city: 100, matchTotal: 200 } },
+        ];
+        const candidatesBothMismatch = [
+            { id: '1', name: 'Bob', city: 'LA', weights: { name: 0, city: 0, matchTotal: 0 } },
+        ];
+
+        function getRows() { return container.querySelectorAll('.row'); }
+        function cellByText(row, text) {
+            return Array.from(row.querySelectorAll('.col-md-1')).find(c => c.textContent === text);
+        }
+
+        it('does not apply scorer CSS classes', () => {
+            view.load(multiItem, candidatesCityMismatch, [multiItem], [], []);
+            expect(container.querySelectorAll('.match-same').length).toBe(0);
+            expect(container.querySelectorAll('.match-samews').length).toBe(0);
+            expect(container.querySelectorAll('.match-contains').length).toBe(0);
+        });
+
+        it('applies a background color to the System A cell for a mismatching column', () => {
+            view.load(multiItem, candidatesCityMismatch, [multiItem], [], []);
+            const systemARow = getRows()[0];
+            const cityCell = cellByText(systemARow, 'NYC');
+            expect(cityCell.style.backgroundColor).not.toBe('');
+        });
+
+        it('does not apply background color to the System A cell for a non-mismatching column', () => {
+            view.load(multiItem, candidatesCityMismatch, [multiItem], [], []);
+            const systemARow = getRows()[0];
+            const nameCell = cellByText(systemARow, 'Alice');
+            expect(nameCell.style.backgroundColor).toBe('');
+        });
+
+        it('applies the same color to non-matching System B cells in the same column', () => {
+            view.load(multiItem, candidatesCityMismatch, [multiItem], [], []);
+            const rows = getRows();
+            const systemARow = rows[0];
+            const candidateRow = rows[2]; // 0=SystemA, 1=Header, 2=first candidate
+            const systemACityColor = cellByText(systemARow, 'NYC').style.backgroundColor;
+            const candidateCityColor = cellByText(candidateRow, 'LA').style.backgroundColor;
+            expect(candidateCityColor).toBe(systemACityColor);
+        });
+
+        it('does not apply background color to matching System B cells', () => {
+            view.load(multiItem, candidatesCityMismatch, [multiItem], [], []);
+            const candidateRow = getRows()[2];
+            const nameCell = cellByText(candidateRow, 'Alice');
+            expect(nameCell.style.backgroundColor).toBe('');
+        });
+
+        it('applies no background color when all columns match', () => {
+            view.load(multiItem, candidatesAllMatch, [multiItem], [], []);
+            const systemARow = getRows()[0];
+            const dataCells = Array.from(systemARow.querySelectorAll('.col-md-1'))
+                .filter(c => c.querySelector('button') === null);
+            for (const cell of dataCells) {
+                expect(cell.style.backgroundColor).toBe('');
+            }
+        });
+
+        it('assigns distinct colors to different mismatching columns', () => {
+            view.load(multiItem, candidatesBothMismatch, [multiItem], [], []);
+            const systemARow = getRows()[0];
+            const nameColor = cellByText(systemARow, 'Alice').style.backgroundColor;
+            const cityColor = cellByText(systemARow, 'NYC').style.backgroundColor;
+            expect(nameColor).not.toBe('');
+            expect(cityColor).not.toBe('');
+            expect(nameColor).not.toBe(cityColor);
         });
     });
 });
