@@ -16,4 +16,16 @@ describe('Vite scaffolding', () => {
         const config = readFileSync(join(__dirname, 'vite.config.ts'), 'utf8');
         expect(config).toContain("environment: 'jsdom'");
     });
+
+    it('scopes coverage collection to src/', () => {
+        const { readFileSync } = require('fs');
+        const config = readFileSync(join(__dirname, 'vite.config.ts'), 'utf8');
+        expect(config).toMatch(/include\s*:\s*\[['"`]src\/\*\*['"`]\]/);
+    });
+
+    it('excludes src/main.ts from coverage collection', () => {
+        const { readFileSync } = require('fs');
+        const config = readFileSync(join(__dirname, 'vite.config.ts'), 'utf8');
+        expect(config).toMatch(/exclude\s*:.*src\/main\.ts/s);
+    });
 });
