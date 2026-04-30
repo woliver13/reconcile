@@ -1,4 +1,4 @@
-import { Item, Candidate, Weights, ColumnWeights, ID_PROPERTY } from './types';
+import { Item, Candidate, Weights, ColumnWeights, ID_PROPERTY, MATCH_TOTAL } from './types';
 import NICKNAME_GROUPS from './nicknames.json';
 
 const NICKNAME_MAP = new Map<string, number>();
@@ -70,11 +70,11 @@ export class Scorer {
                     matchTotal += weights[key];
                 }
             });
-            weights['matchTotal'] = matchTotal;
+            weights[MATCH_TOTAL] = matchTotal;
             candidate['weights'] = weights;
             return candidate as Candidate;
         })
-        .filter(item => item.weights['matchTotal'] > 0)
-        .sort((a, b) => b.weights['matchTotal'] - a.weights['matchTotal']);
+        .filter(item => item.weights[MATCH_TOTAL] > 0)
+        .sort((a, b) => b.weights[MATCH_TOTAL] - a.weights[MATCH_TOTAL]);
     }
 }

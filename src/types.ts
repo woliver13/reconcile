@@ -1,4 +1,5 @@
 export const ID_PROPERTY = 'id';
+export const MATCH_TOTAL = 'matchTotal';
 
 export interface Weights {
     EXACT: number;

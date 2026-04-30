@@ -1,4 +1,4 @@
-import { IView, Item, Candidate, Match, ActionType, ActionEvent, ID_PROPERTY } from './types';
+import { IView, Item, Candidate, Match, ActionType, ActionEvent, ID_PROPERTY, MATCH_TOTAL } from './types';
 
 export class TableView implements IView {
     private readonly listeners: Partial<Record<ActionType, Array<(e: ActionEvent) => void>>> = {};
@@ -30,7 +30,7 @@ export class TableView implements IView {
             controlBar.append(this.buildPrevButton(), this.buildUndoButton(memento.length > 0));
             this.masterDiv.append(controlBar);
 
-            if (candidates.length === 1 || candidates[0].weights['matchTotal'] > candidates[1].weights['matchTotal']) {
+            if (candidates.length === 1 || candidates[0].weights[MATCH_TOTAL] > candidates[1].weights[MATCH_TOTAL]) {
                 const matchBtn = this.masterDiv.querySelector<HTMLButtonElement>('button[data-b]');
                 matchBtn?.focus();
             }
