@@ -10,7 +10,7 @@ const container = document.querySelector<HTMLElement>('.reconcile')!;
 
 const service = new SampleDataService();
 const scorer  = new Scorer(WEIGHTS);
-const view    = new TableView(container, WEIGHTS);
+const view    = new TableView(container);
 const reconciler = new Reconciler(service, view, scorer);
 
 reconciler.init().catch(err => view.showError(err));

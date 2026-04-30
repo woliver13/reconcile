@@ -1,16 +1,14 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TableView } from './src/tableView';
 
-const WEIGHTS = { EXACT: 100, WHITESPACE: 80, NICKNAME: 60, CONTAINS: 30, TRANSPOSITION: 20 };
-
 function makeContainer() {
     return document.createElement('div');
 }
 
 describe('TableView', () => {
     describe('constructor', () => {
-        it('can be constructed with a container element and weights', () => {
-            const view = new TableView(makeContainer(), WEIGHTS);
+        it('can be constructed with a container element', () => {
+            const view = new TableView(makeContainer());
             expect(view).toBeDefined();
         });
     });
@@ -20,7 +18,7 @@ describe('TableView', () => {
 
         beforeEach(() => {
             container = makeContainer();
-            view = new TableView(container, WEIGHTS);
+            view = new TableView(container);
         });
 
         const matchItem = { id: '0', name: 'Alice' };
@@ -190,7 +188,7 @@ describe('TableView', () => {
 
         beforeEach(() => {
             container = makeContainer();
-            view = new TableView(container, WEIGHTS);
+            view = new TableView(container);
         });
 
         const multiItem = { id: '0', name: 'Alice', city: 'NYC' };

@@ -1,4 +1,4 @@
-import { IView, Item, Candidate, Match, ActionType, ActionEvent, Weights } from './types';
+import { IView, Item, Candidate, Match, ActionType, ActionEvent } from './types';
 
 export class TableView implements IView {
     private readonly idProperty = 'id';
@@ -7,7 +7,6 @@ export class TableView implements IView {
 
     constructor(
         private readonly masterDiv: HTMLElement,
-        private readonly weights: Weights,
     ) {}
 
     load(matchItem: Item, candidates: Candidate[], listA: Item[], listB: Item[], memento: Match[]): void {
