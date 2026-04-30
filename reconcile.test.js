@@ -250,4 +250,20 @@ describe('Reconciler', () => {
             });
         });
     });
+
+    describe('match() — stale ID guard', () => {
+        it('does not call service.set() when aId does not match any listA item', () => {
+            reconcile.match({ a: 'STALE', b: 'A' });
+            expect(service.set).not.toHaveBeenCalled();
+        });
+
+        it('does not call service.set() when bId does not match any listB item', () => {
+            reconcile.match({ a: '5', b: 'STALE' });
+            expect(service.set).not.toHaveBeenCalled();
+        });
+
+        it('does not throw when both IDs are stale', () => {
+            expect(() => reconcile.match({ a: 'STALE_A', b: 'STALE_B' })).not.toThrow();
+        });
+    });
 });

@@ -57,8 +57,9 @@ export class Reconciler {
     match(event: ActionEvent): void {
         const { a: aId, b: bId } = event;
         if (!aId || !bId) return;
-        const aItem = this.listA.find(item => item[this.idProperty] === aId)!;
-        const bItem = this.listB.find(item => item[this.idProperty] === bId)!;
+        const aItem = this.listA.find(item => item[this.idProperty] === aId);
+        const bItem = this.listB.find(item => item[this.idProperty] === bId);
+        if (!aItem || !bItem) return;
         const differences = this.computeDifferences(aItem, bItem);
         this.service.set(aId, bId, this.currentUsername, differences);
         const lastMatch: Match = { a: aItem, b: bItem };
