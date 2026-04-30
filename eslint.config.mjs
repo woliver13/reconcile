@@ -5,16 +5,6 @@ export default [
     { ignores: ["node_modules/", "coverage/", "dist/"] },
     js.configs.recommended,
     {
-        files: ["reconcile.js", "reconcileTestService.js"],
-        languageOptions: {
-            globals: {
-                ...globals.browser,
-                ...globals.commonjs,
-                ...globals.amd,
-            }
-        }
-    },
-    {
         files: ["**/*.mjs"],
         languageOptions: {
             globals: {
