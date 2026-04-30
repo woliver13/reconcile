@@ -1,0 +1,12 @@
+.rv-table { width: 100%; }
+
+.rv-header-row { background-color: #000; color: #fff; }
+
+.rv-match-row { border-bottom: 3px solid #333; }
+
+.rv-mismatch-0 { background-color: #ffff00; }
+.rv-mismatch-1 { background-color: #add8e6; }
+.rv-mismatch-2 { background-color: #90ee90; }
+.rv-mismatch-3 { background-color: #ffb6c1; }
+.rv-mismatch-4 { background-color: #ffa07a; }
+.rv-mismatch-5 { background-color: #dda0dd; }

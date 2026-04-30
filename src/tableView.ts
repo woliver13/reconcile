@@ -1,8 +1,9 @@
+import './tableView.css';
 import { IView, Item, Candidate, Match, ActionType, ActionEvent, ID_PROPERTY, MATCH_TOTAL } from './types';
 
 export class TableView implements IView {
     private readonly listeners: Partial<Record<ActionType, Array<(e: ActionEvent) => void>>> = {};
-    private readonly columnColors = ['#ffff00', '#add8e6', '#90ee90', '#ffb6c1', '#ffa07a', '#dda0dd'];
+    private readonly columnClassCount = 6;
 
     constructor(
         private readonly masterDiv: HTMLElement,
@@ -11,9 +12,9 @@ export class TableView implements IView {
     load(matchItem: Item, candidates: Candidate[], listA: Item[], listB: Item[], memento: Match[]): void {
         this.masterDiv.innerHTML = '';
         if (listA.length > 0) {
-            const mismatchColors = this.getMismatchColors(matchItem, candidates);
+            const mismatchColors = this.getMismatchClasses(matchItem, candidates);
             const table = document.createElement('table');
-            table.style.width = '100%';
+            table.classList.add('rv-table');
 
             const thead = document.createElement('thead');
             thead.append(this.buildHeaderRow(matchItem));
@@ -71,24 +72,23 @@ export class TableView implements IView {
         return cell;
     }
 
-    private getMismatchColors(matchItem: Item, candidates: Candidate[]): Record<string, string> {
-        const colors: Record<string, string> = {};
-        let colorIdx = 0;
+    private getMismatchClasses(matchItem: Item, candidates: Candidate[]): Record<string, string> {
+        const classes: Record<string, string> = {};
+        let idx = 0;
         Object.keys(matchItem)
             .filter(k => k !== ID_PROPERTY)
             .forEach(key => {
                 if (candidates.some(c => c[key] !== matchItem[key])) {
-                    colors[key] = this.columnColors[colorIdx % this.columnColors.length];
-                    colorIdx++;
+                    classes[key] = `rv-mismatch-${idx % this.columnClassCount}`;
+                    idx++;
                 }
             });
-        return colors;
+        return classes;
     }
 
     private buildHeaderRow(matchItem: Item): HTMLTableRowElement {
         const tr = document.createElement('tr');
-        tr.style.backgroundColor = '#000';
-        tr.style.color = '#fff';
+        tr.classList.add('rv-header-row');
         Object.keys(matchItem).forEach(key => {
             if (key !== ID_PROPERTY) {
                 const th = document.createElement('th');
@@ -102,11 +102,11 @@ export class TableView implements IView {
 
     private buildMatchRow(matchItem: Item, mismatchColors: Record<string, string>): HTMLTableRowElement {
         const tr = document.createElement('tr');
-        tr.style.borderBottom = '3px solid #333';
+        tr.classList.add('rv-match-row');
         Object.keys(matchItem).forEach(key => {
             if (key !== ID_PROPERTY) {
                 const cell = this.td(String(matchItem[key]));
-                if (mismatchColors[key]) cell.style.backgroundColor = mismatchColors[key];
+                if (mismatchColors[key]) cell.classList.add(mismatchColors[key]);
                 tr.append(cell);
             }
         });
@@ -149,7 +149,7 @@ export class TableView implements IView {
                 if (key !== ID_PROPERTY && key !== 'weights') {
                     const cell = this.td(String(item[key]));
                     if (mismatchColors[key] && item[key] !== matchItem[key]) {
-                        cell.style.backgroundColor = mismatchColors[key];
+                        cell.classList.add(mismatchColors[key]);
                     }
                     tr.append(cell);
                 }
