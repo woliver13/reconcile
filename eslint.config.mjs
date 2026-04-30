@@ -13,7 +13,7 @@ export default [
         }
     },
     {
-        files: ["**/*.test.js", "__mocks__/**/*.js"],
+        files: ["**/*.test.js"],
         languageOptions: {
             globals: {
                 describe: 'readonly',
