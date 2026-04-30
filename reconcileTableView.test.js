@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TableView } from './src/tableView';
 
-const WEIGHTS = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
+const WEIGHTS = { EXACT: 100, WHITESPACE: 80, NICKNAME: 60, CONTAINS: 30, TRANSPOSITION: 20 };
 
 function makeContainer() {
     return document.createElement('div');
