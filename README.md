@@ -20,7 +20,7 @@ Each field in a candidate is scored independently against the corresponding fiel
 | Contains | 30 | `Anders` ⊂ `Anderson` |
 | Transposition | 20 | `Oliver` ≈ `Oilver` (exactly one adjacent character swap) |
 
-Weights are constructor-injected into `Scorer` and `BootstrapView`, so they can be tuned without changing source code.
+Weights are constructor-injected into `Scorer` and `TableView`, so they can be tuned without changing source code.
 
 Individual columns can override any weight via the optional `ColumnWeights` map passed as a second argument to `Scorer`:
 
@@ -62,7 +62,7 @@ src/
   main.ts              — entry point; wires service, scorer, view, and reconciler
   reconciler.ts        — controller; drives the match/no-match/undo workflow
   scorer.ts            — Scorer class; scores a candidate against a match item
-  bootstrapView.ts     — BootstrapView class; renders UI with Bootstrap 5, no jQuery
+  tableView.ts         — TableView class; renders UI with Bootstrap 5, no jQuery
   sampleDataService.ts — in-browser demo service with synthetic data
   types.ts             — shared TypeScript interfaces (Weights, Item, Candidate, …)
   nicknames.json       — generated nickname equivalence groups (do not edit directly)
