@@ -26,7 +26,16 @@ export default [
         files: ["**/*.test.js", "__mocks__/**/*.js"],
         languageOptions: {
             globals: {
-                ...globals.jest,
+                describe: 'readonly',
+                it: 'readonly',
+                test: 'readonly',
+                expect: 'readonly',
+                beforeAll: 'readonly',
+                afterAll: 'readonly',
+                beforeEach: 'readonly',
+                afterEach: 'readonly',
+                vi: 'readonly',
+                suite: 'readonly',
                 ...globals.node,
                 ...globals.browser,
             }
