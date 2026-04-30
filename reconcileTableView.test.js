@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TableView } from './src/tableView';
 
 function makeContainer() {
@@ -180,6 +180,87 @@ describe('TableView', () => {
             view.load(matchItem, twoCandidates, [matchItem], [], []);
             const noMatchInsideTable = container.querySelector('table button[accesskey="n"]');
             expect(noMatchInsideTable).not.toBeNull();
+        });
+    });
+
+    describe('event dispatch', () => {
+        let container, view;
+        const matchItem = { id: '0', name: 'Alice' };
+        const candidates = [
+            { id: '1', name: 'Alice', weights: { name: 100, matchTotal: 100 } },
+            { id: '2', name: 'Bob',   weights: { name: 30,  matchTotal: 30  } },
+        ];
+
+        beforeEach(() => {
+            container = makeContainer();
+            view = new TableView(container);
+            view.load(matchItem, candidates, [matchItem], [], []);
+        });
+
+        function btn(label) {
+            return Array.from(container.querySelectorAll('button')).find(b => b.textContent === label);
+        }
+
+        it('clicking No Match dispatches a "next" action', () => {
+            const listener = vi.fn();
+            view.onAction('next', listener);
+            btn('No Match').click();
+            expect(listener).toHaveBeenCalledOnce();
+            expect(listener).toHaveBeenCalledWith({ type: 'next' });
+        });
+
+        it('clicking Previous dispatches a "prev" action', () => {
+            const listener = vi.fn();
+            view.onAction('prev', listener);
+            btn('Previous').click();
+            expect(listener).toHaveBeenCalledOnce();
+            expect(listener).toHaveBeenCalledWith({ type: 'prev' });
+        });
+
+        it('clicking Undo dispatches an "undo" action', () => {
+            const memento = [{ a: matchItem, b: candidates[0] }];
+            container = makeContainer();
+            view = new TableView(container);
+            view.load(matchItem, candidates, [matchItem], [], memento);
+            const listener = vi.fn();
+            view.onAction('undo', listener);
+            btn('Undo').click();
+            expect(listener).toHaveBeenCalledOnce();
+            expect(listener).toHaveBeenCalledWith({ type: 'undo' });
+        });
+
+        it('clicking a Match button dispatches a "match" action', () => {
+            const listener = vi.fn();
+            view.onAction('match', listener);
+            const matchBtns = Array.from(container.querySelectorAll('button')).filter(b => b.textContent === 'Match');
+            matchBtns[0].click();
+            expect(listener).toHaveBeenCalledOnce();
+        });
+
+        it('match action carries the correct a and b IDs', () => {
+            const listener = vi.fn();
+            view.onAction('match', listener);
+            const matchBtns = Array.from(container.querySelectorAll('button')).filter(b => b.textContent === 'Match');
+            matchBtns[0].click();
+            expect(listener).toHaveBeenCalledWith({ type: 'match', a: '0', b: '1' });
+        });
+
+        it('second Match button carries the correct b ID', () => {
+            const listener = vi.fn();
+            view.onAction('match', listener);
+            const matchBtns = Array.from(container.querySelectorAll('button')).filter(b => b.textContent === 'Match');
+            matchBtns[1].click();
+            expect(listener).toHaveBeenCalledWith({ type: 'match', a: '0', b: '2' });
+        });
+
+        it('multiple listeners on the same action type are all called', () => {
+            const l1 = vi.fn();
+            const l2 = vi.fn();
+            view.onAction('next', l1);
+            view.onAction('next', l2);
+            btn('No Match').click();
+            expect(l1).toHaveBeenCalledOnce();
+            expect(l2).toHaveBeenCalledOnce();
         });
     });
 
