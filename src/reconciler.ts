@@ -1,4 +1,4 @@
-import { IService, IView, Item, Match, ActionEvent, Difference } from './types';
+import { IService, IView, Item, Match, ActionEvent, Difference, ID_PROPERTY } from './types';
 import { Scorer } from './scorer';
 
 export class Reconciler {
@@ -6,7 +6,6 @@ export class Reconciler {
     private listA: Item[] = [];
     private listB: Item[] = [];
     private readonly memento: Match[] = [];
-    private readonly idProperty = 'id';
 
     constructor(
         private readonly service: IService,
@@ -46,7 +45,7 @@ export class Reconciler {
     private computeDifferences(a: Item, b: Item): Difference[] {
         const differences: Difference[] = [];
         for (const field of Object.keys(a)) {
-            if (field === this.idProperty) continue;
+            if (field === ID_PROPERTY) continue;
             if (a[field] !== b[field]) {
                 differences.push({ field, aValue: a[field], bValue: b[field] });
             }
@@ -57,22 +56,22 @@ export class Reconciler {
     match(event: ActionEvent): void {
         const { a: aId, b: bId } = event;
         if (!aId || !bId) return;
-        const aItem = this.listA.find(item => item[this.idProperty] === aId);
-        const bItem = this.listB.find(item => item[this.idProperty] === bId);
+        const aItem = this.listA.find(item => item[ID_PROPERTY] === aId);
+        const bItem = this.listB.find(item => item[ID_PROPERTY] === bId);
         if (!aItem || !bItem) return;
         const differences = this.computeDifferences(aItem, bItem);
         this.service.set(aId, bId, this.currentUsername, differences);
         const lastMatch: Match = { a: aItem, b: bItem };
         this.memento.push(lastMatch);
-        this.listA = this.listA.filter(item => item[this.idProperty] !== aId);
-        this.listB = this.listB.filter(item => item[this.idProperty] !== bId);
+        this.listA = this.listA.filter(item => item[ID_PROPERTY] !== aId);
+        this.listB = this.listB.filter(item => item[ID_PROPERTY] !== bId);
         this.redraw();
     }
 
     undo(): void {
         if (this.memento.length === 0) return;
         const lastMatch = this.memento.pop()!;
-        this.service.undo(lastMatch.a[this.idProperty] as string, lastMatch.b[this.idProperty] as string);
+        this.service.undo(lastMatch.a[ID_PROPERTY] as string, lastMatch.b[ID_PROPERTY] as string);
         this.listA.push(lastMatch.a);
         this.listB.push(lastMatch.b);
         this.position = this.listA.length - 1;

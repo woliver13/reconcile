@@ -1,4 +1,4 @@
-import { Item, Candidate, Weights, ColumnWeights } from './types';
+import { Item, Candidate, Weights, ColumnWeights, ID_PROPERTY } from './types';
 import NICKNAME_GROUPS from './nicknames.json';
 
 const NICKNAME_MAP = new Map<string, number>();
@@ -59,14 +59,13 @@ export class Scorer {
 
     getCandidates(matchItem: Item, list: Item[]): Candidate[] {
         if (matchItem == null) return [];
-        const idProperty = 'id';
         return list.map(item => {
             const candidate: Record<string, unknown> = {};
             const weights: Record<string, number> = {};
             let matchTotal = 0;
             Object.keys(item).forEach(key => {
                 candidate[key] = item[key];
-                if (key !== idProperty) {
+                if (key !== ID_PROPERTY) {
                     weights[key] = this.getWeight(item[key], matchItem[key], key);
                     matchTotal += weights[key];
                 }
