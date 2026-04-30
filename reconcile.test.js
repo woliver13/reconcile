@@ -251,6 +251,66 @@ describe('Reconciler', () => {
         });
     });
 
+    describe('next() / prev() navigation', () => {
+        let r, v;
+
+        beforeEach(async () => {
+            const svc = makeService(
+                [
+                    { id: '1', name: 'Alice' },
+                    { id: '2', name: 'Bob'   },
+                    { id: '3', name: 'Carol' },
+                ],
+                []
+            );
+            v = makeView();
+            r = new Reconciler(svc, v, new Scorer(WEIGHTS));
+            await r.init();
+            v.load.mockClear();
+        });
+
+        it('next() advances to the second item', () => {
+            r.next();
+            expect(v.load.mock.calls[0][0].id).toBe('2');
+        });
+
+        it('next() advances to the third item on the second call', () => {
+            r.next();
+            r.next();
+            expect(v.load.mock.calls[1][0].id).toBe('3');
+        });
+
+        it('next() wraps from last item back to first', () => {
+            r.next(); // → 2
+            r.next(); // → 3
+            r.next(); // → wraps to 1
+            expect(v.load.mock.calls[2][0].id).toBe('1');
+        });
+
+        it('prev() from first item wraps to last', () => {
+            r.prev();
+            expect(v.load.mock.calls[0][0].id).toBe('3');
+        });
+
+        it('prev() moves back from the second item to the first', () => {
+            r.next(); // → 2
+            v.load.mockClear();
+            r.prev(); // → 1
+            expect(v.load.mock.calls[0][0].id).toBe('1');
+        });
+
+        it('next() calls view.load on each call', () => {
+            r.next();
+            r.next();
+            expect(v.load).toHaveBeenCalledTimes(2);
+        });
+
+        it('prev() calls view.load', () => {
+            r.prev();
+            expect(v.load).toHaveBeenCalledTimes(1);
+        });
+    });
+
     describe('match() — stale ID guard', () => {
         it('does not call service.set() when aId does not match any listA item', () => {
             reconcile.match({ a: 'STALE', b: 'A' });
