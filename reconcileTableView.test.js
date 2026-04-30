@@ -114,7 +114,7 @@ describe('TableView', () => {
         it('applies a bottom border to the System A row to separate it from candidates', () => {
             view.load(matchItem, twoCandidates, [matchItem], [], []);
             const systemARow = container.querySelectorAll('tbody tr')[0];
-            expect(systemARow.style.borderBottom).not.toBe('');
+            expect(systemARow.classList.contains('rv-match-row')).toBe(true);
         });
 
         it('does not render div.row or div.col elements', () => {
@@ -296,18 +296,22 @@ describe('TableView', () => {
             expect(container.querySelectorAll('.match-contains').length).toBe(0);
         });
 
+        function mismatchClass(el) {
+            return Array.from(el.classList).find(c => /^rv-mismatch-\d$/.test(c)) ?? '';
+        }
+
         it('applies a background color to the System A cell for a mismatching column', () => {
             view.load(multiItem, candidatesCityMismatch, [multiItem], [], []);
             const systemARow = getRows()[1]; // 0=header, 1=SystemA, 2+=candidates
             const cityCell = cellByText(systemARow, 'NYC');
-            expect(cityCell.style.backgroundColor).not.toBe('');
+            expect(mismatchClass(cityCell)).not.toBe('');
         });
 
         it('does not apply background color to the System A cell for a non-mismatching column', () => {
             view.load(multiItem, candidatesCityMismatch, [multiItem], [], []);
             const systemARow = getRows()[1];
             const nameCell = cellByText(systemARow, 'Alice');
-            expect(nameCell.style.backgroundColor).toBe('');
+            expect(mismatchClass(nameCell)).toBe('');
         });
 
         it('applies the same color to non-matching System B cells in the same column', () => {
@@ -315,16 +319,16 @@ describe('TableView', () => {
             const rows = getRows();
             const systemARow = rows[1];  // 0=header, 1=SystemA, 2+=candidates
             const candidateRow = rows[2];
-            const systemACityColor = cellByText(systemARow, 'NYC').style.backgroundColor;
-            const candidateCityColor = cellByText(candidateRow, 'LA').style.backgroundColor;
-            expect(candidateCityColor).toBe(systemACityColor);
+            const systemACityClass = mismatchClass(cellByText(systemARow, 'NYC'));
+            const candidateCityClass = mismatchClass(cellByText(candidateRow, 'LA'));
+            expect(candidateCityClass).toBe(systemACityClass);
         });
 
         it('does not apply background color to matching System B cells', () => {
             view.load(multiItem, candidatesCityMismatch, [multiItem], [], []);
             const candidateRow = getRows()[2];
             const nameCell = cellByText(candidateRow, 'Alice');
-            expect(nameCell.style.backgroundColor).toBe('');
+            expect(mismatchClass(nameCell)).toBe('');
         });
 
         it('applies no background color when all columns match', () => {
@@ -333,18 +337,18 @@ describe('TableView', () => {
             const dataCells = Array.from(systemARow.querySelectorAll('td'))
                 .filter(c => c.querySelector('button') === null);
             for (const cell of dataCells) {
-                expect(cell.style.backgroundColor).toBe('');
+                expect(mismatchClass(cell)).toBe('');
             }
         });
 
         it('assigns distinct colors to different mismatching columns', () => {
             view.load(multiItem, candidatesBothMismatch, [multiItem], [], []);
             const systemARow = getRows()[1];
-            const nameColor = cellByText(systemARow, 'Alice').style.backgroundColor;
-            const cityColor = cellByText(systemARow, 'NYC').style.backgroundColor;
-            expect(nameColor).not.toBe('');
-            expect(cityColor).not.toBe('');
-            expect(nameColor).not.toBe(cityColor);
+            const nameClass = mismatchClass(cellByText(systemARow, 'Alice'));
+            const cityClass = mismatchClass(cellByText(systemARow, 'NYC'));
+            expect(nameClass).not.toBe('');
+            expect(cityClass).not.toBe('');
+            expect(nameClass).not.toBe(cityClass);
         });
     });
 });
