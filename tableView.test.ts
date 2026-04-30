@@ -27,6 +27,13 @@ describe('src/tableView.ts source conventions', () => {
         expect(source).not.toMatch(/constructor\s*\([^)]*weights[^)]*\)/);
     });
 
+    it('columnClassCount is a constructor parameter, not a standalone class field', () => {
+        // A standalone field ends with `= <value>;` at class body level.
+        // A constructor parameter ends with `= <value>,` or `= <value>)`.
+        expect(source).not.toMatch(/private\s+readonly\s+columnClassCount\s*=\s*\d+\s*;/);
+        expect(source).toMatch(/constructor[\s\S]*?columnClassCount\s*=/);
+    });
+
     it('does not set table width via inline style', () => {
         expect(source).not.toMatch(/\.style\.width\s*=/);
     });
@@ -42,6 +49,37 @@ describe('src/tableView.ts source conventions', () => {
 
     it('does not apply mismatch colors via inline style', () => {
         expect(source).not.toMatch(/\.style\.backgroundColor\s*=\s*mismatch/);
+    });
+});
+
+describe('TableView — injectable columnClassCount', () => {
+    const matchItemMulti: Item = { [ID_PROPERTY]: 'a1', f1: 'x', f2: 'x', f3: 'x' };
+    const candidatesMulti: Candidate[] = [
+        { [ID_PROPERTY]: 'b1', f1: 'A', f2: 'B', f3: 'C', weights: {} },
+    ];
+
+    function renderWith(columnClassCount: number): HTMLElement {
+        const div = document.createElement('div');
+        new TableView(div, columnClassCount).load(matchItemMulti, candidatesMulti, [matchItemMulti], [], []);
+        return div;
+    }
+
+    it('uses the default of 6 CSS classes when no count is passed', () => {
+        const div = document.createElement('div');
+        new TableView(div).load(matchItem, candidates, [matchItem], [], []);
+        const cells = Array.from(div.querySelectorAll('tbody td')) as HTMLElement[];
+        const classes = cells.flatMap(td => Array.from(td.classList)).filter(c => /rv-mismatch-\d/.test(c));
+        expect(classes.every(c => parseInt(c.replace('rv-mismatch-', '')) < 6)).toBe(true);
+    });
+
+    it('cycles mismatch classes within a custom columnClassCount of 2', () => {
+        const div = renderWith(2);
+        const cells = Array.from(div.querySelectorAll('tbody td')) as HTMLElement[];
+        const indices = cells
+            .flatMap(td => Array.from(td.classList))
+            .filter(c => /rv-mismatch-\d/.test(c))
+            .map(c => parseInt(c.replace('rv-mismatch-', '')));
+        expect(indices.every(i => i < 2)).toBe(true);
     });
 });
 

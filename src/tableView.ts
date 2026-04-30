@@ -3,10 +3,10 @@ import { IView, Item, Candidate, Match, ActionType, ActionEvent, ID_PROPERTY, MA
 
 export class TableView implements IView {
     private readonly listeners: Partial<Record<ActionType, Array<(e: ActionEvent) => void>>> = {};
-    private readonly columnClassCount = 6;
 
     constructor(
         private readonly masterDiv: HTMLElement,
+        private readonly columnClassCount = 6,
     ) {}
 
     load(matchItem: Item, candidates: Candidate[], listA: Item[], listB: Item[], memento: Match[]): void {
