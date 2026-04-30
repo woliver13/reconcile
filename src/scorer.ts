@@ -10,6 +10,7 @@ export class Scorer {
         private readonly columnWeights: ColumnWeights = {},
     ) {}
 
+    /** Returns the similarity weight between two cell values. @param cell1 Value from list A. @param cell2 Value from list B. @param column Optional column name used to apply per-column weight overrides. @returns Numeric weight (0 = no match). */
     getWeight(cell1: unknown, cell2: unknown, column?: string): number {
         if (cell1 == null) return 0;
         if (cell2 == null) return 0;
@@ -57,6 +58,7 @@ export class Scorer {
         return s1.includes(s2) || s2.includes(s1);
     }
 
+    /** Scores every item in `list` against `matchItem` and returns those with a positive match total, sorted descending. @param matchItem The item from list A to score against. @param list Items from list B to evaluate. @returns Filtered, scored, and sorted candidates. */
     getCandidates(matchItem: Item, list: Item[]): Candidate[] {
         if (matchItem == null) return [];
         return list.map(item => {

@@ -16,6 +16,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+/** @type {string[][]} Each inner array is an equivalence group of nickname variants (uppercase). */
 const GROUPS = [
     // ── Male ──────────────────────────────────────────────────────────────
     ['ABE', 'ABRAHAM'],
