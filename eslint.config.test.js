@@ -16,4 +16,8 @@ describe('eslint.config.mjs source conventions', () => {
     it('declares vi as a global for test files', () => {
         expect(config).toMatch(/\bvi\b\s*:/);
     });
+
+    it('does not target deleted legacy files reconcile.js or reconcileTestService.js', () => {
+        expect(config).not.toMatch(/reconcile\.js|reconcileTestService\.js/);
+    });
 });
