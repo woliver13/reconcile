@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Reconciler } from './src/reconciler';
 import { Scorer } from './src/scorer';
 
-const WEIGHTS = { EXACT: 100, WHITESPACE: 80, CONTAINS: 30 };
+const WEIGHTS = { EXACT: 100, WHITESPACE: 80, NICKNAME: 60, CONTAINS: 30, TRANSPOSITION: 20 };
 
 describe('Reconciler', () => {
     let reconcile, service, view, scorer;
@@ -67,6 +67,22 @@ describe('Reconciler', () => {
                 [{ id: 'X', name: 'Anderson' }]
             );
             expect(candidates(v)[0].weights.name).toBe(30);
+        });
+
+        it('scores a nickname match at 60', async () => {
+            const { v } = await setup(
+                [{ id: '1', firstName: 'Nick' }],
+                [{ id: 'X', firstName: 'Nicholas' }]
+            );
+            expect(candidates(v)[0].weights.firstName).toBe(60);
+        });
+
+        it('scores a transposition match at 20', async () => {
+            const { v } = await setup(
+                [{ id: '1', name: 'Oliver' }],
+                [{ id: 'X', name: 'Oilver' }]
+            );
+            expect(candidates(v)[0].weights.name).toBe(20);
         });
 
         it('excludes items with no matching fields from candidates', async () => {
