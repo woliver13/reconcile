@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 const pkg = JSON.parse(readFileSync(join(__dirname, 'package.json'), 'utf8'));
@@ -47,5 +47,16 @@ describe('package.json infrastructure', () => {
 
     it('test script runs vitest', () => {
         expect(pkg.scripts.test).toContain('vitest');
+    });
+});
+
+describe('project filesystem', () => {
+    it('does not contain an empty __mocks__/ directory', () => {
+        expect(existsSync(join(__dirname, '__mocks__'))).toBe(false);
+    });
+
+    it('eslint config does not reference __mocks__/', () => {
+        const eslintConfig = readFileSync(join(__dirname, 'eslint.config.mjs'), 'utf8');
+        expect(eslintConfig).not.toMatch(/__mocks__/);
     });
 });
