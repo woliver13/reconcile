@@ -26,8 +26,8 @@ export class Reconciler {
             this.listA = data.a;
             this.listB = data.b;
             this.redraw();
-        } catch (status) {
-            this.view.showError(status);
+        } catch (error) {
+            this.view.showError(error);
         }
     }
 
