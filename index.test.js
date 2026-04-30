@@ -18,9 +18,19 @@ describe('index.html', () => {
         expect(html).not.toMatch(/jquery/i);
     });
 
-    it('loads Bootstrap 5.x or later', () => {
-        const match = html.match(/bootstrap[/@-](\d+)\.\d+/i);
-        expect(match).not.toBeNull();
-        expect(parseInt(match[1])).toBeGreaterThanOrEqual(5);
+    it('does not load Bootstrap from a CDN link', () => {
+        expect(html).not.toMatch(/<link[^>]+bootstrap[^>]*>/i);
+    });
+});
+
+describe('main.ts', () => {
+    let src;
+
+    beforeAll(() => {
+        src = readFileSync(join(__dirname, 'src', 'main.ts'), 'utf8');
+    });
+
+    it('imports Bootstrap via npm (not CDN)', () => {
+        expect(src).toMatch(/import\s+['"]bootstrap\//);
     });
 });
