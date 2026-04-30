@@ -13,4 +13,4 @@ const scorer  = new Scorer(WEIGHTS);
 const view    = new TableView(container, WEIGHTS);
 const reconciler = new Reconciler(service, view, scorer);
 
-reconciler.init();
+reconciler.init().catch(err => view.showError(err));
