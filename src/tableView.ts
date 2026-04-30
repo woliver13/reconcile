@@ -1,7 +1,6 @@
-import { IView, Item, Candidate, Match, ActionType, ActionEvent } from './types';
+import { IView, Item, Candidate, Match, ActionType, ActionEvent, ID_PROPERTY } from './types';
 
 export class TableView implements IView {
-    private readonly idProperty = 'id';
     private readonly listeners: Partial<Record<ActionType, Array<(e: ActionEvent) => void>>> = {};
     private readonly columnColors = ['#ffff00', '#add8e6', '#90ee90', '#ffb6c1', '#ffa07a', '#dda0dd'];
 
@@ -76,7 +75,7 @@ export class TableView implements IView {
         const colors: Record<string, string> = {};
         let colorIdx = 0;
         Object.keys(matchItem)
-            .filter(k => k !== this.idProperty)
+            .filter(k => k !== ID_PROPERTY)
             .forEach(key => {
                 if (candidates.some(c => c[key] !== matchItem[key])) {
                     colors[key] = this.columnColors[colorIdx % this.columnColors.length];
@@ -91,7 +90,7 @@ export class TableView implements IView {
         tr.style.backgroundColor = '#000';
         tr.style.color = '#fff';
         Object.keys(matchItem).forEach(key => {
-            if (key !== this.idProperty) {
+            if (key !== ID_PROPERTY) {
                 const th = document.createElement('th');
                 th.textContent = key;
                 tr.append(th);
@@ -105,7 +104,7 @@ export class TableView implements IView {
         const tr = document.createElement('tr');
         tr.style.borderBottom = '3px solid #333';
         Object.keys(matchItem).forEach(key => {
-            if (key !== this.idProperty) {
+            if (key !== ID_PROPERTY) {
                 const cell = this.td(String(matchItem[key]));
                 if (mismatchColors[key]) cell.style.backgroundColor = mismatchColors[key];
                 tr.append(cell);
@@ -147,7 +146,7 @@ export class TableView implements IView {
         return candidates.map((item, index) => {
             const tr = document.createElement('tr');
             Object.keys(item).forEach(key => {
-                if (key !== this.idProperty && key !== 'weights') {
+                if (key !== ID_PROPERTY && key !== 'weights') {
                     const cell = this.td(String(item[key]));
                     if (mismatchColors[key] && item[key] !== matchItem[key]) {
                         cell.style.backgroundColor = mismatchColors[key];
@@ -159,8 +158,8 @@ export class TableView implements IView {
             const btn = document.createElement('button');
             btn.className = 'btn btn-success';
             if (index === 0) btn.setAttribute('accesskey', 'm');
-            btn.setAttribute('data-a', String(matchItem[this.idProperty]));
-            btn.setAttribute('data-b', String(item[this.idProperty]));
+            btn.setAttribute('data-a', String(matchItem[ID_PROPERTY]));
+            btn.setAttribute('data-b', String(item[ID_PROPERTY]));
             btn.textContent = 'Match';
             btn.addEventListener('click', (e) => this.match(e));
             const btnCell = this.td();

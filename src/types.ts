@@ -1,3 +1,5 @@
+export const ID_PROPERTY = 'id';
+
 export interface Weights {
     EXACT: number;
     WHITESPACE: number;
